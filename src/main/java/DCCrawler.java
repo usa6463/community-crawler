@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
@@ -52,6 +53,7 @@ public class DCCrawler extends WebCrawler {
         }
 
         JSONObject result = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
 
         JSONObject htmlMeta = getHtmlMeta(page);
         result.put("html_meta", htmlMeta);
