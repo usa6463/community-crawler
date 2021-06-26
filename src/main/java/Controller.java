@@ -14,6 +14,7 @@ public class Controller {
         config.setPolitenessDelay(500);				// 동일 호스트에 대한 요청 delay 설정 (ms)
         config.setCrawlStorageFolder("data/crawl");	// 크롤러의 데이터 저장 디렉터리 지정
 
+
         // CrawController 준비하기
         PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
