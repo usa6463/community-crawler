@@ -1,14 +1,13 @@
 package dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DCPost {
-    private HtmlMeta meta;
-    private String title;
-    private String content;
+@NoArgsConstructor
+public class DCContent extends Content {
     private String nickname;
     private String ip;
     private String date;

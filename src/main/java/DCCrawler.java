@@ -1,4 +1,8 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.CrawlingResult;
+import dto.DCContent;
+import dto.HtmlMeta;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
@@ -52,20 +56,24 @@ public class DCCrawler extends WebCrawler {
             return;
         }
 
-        JSONObject result = new JSONObject();
+        CrawlingResult result = new CrawlingResult();
         ObjectMapper mapper = new ObjectMapper();
 
-        JSONObject htmlMeta = getHtmlMeta(page);
-        result.put("html_meta", htmlMeta);
+        HtmlMeta htmlMeta = getHtmlMeta(page);
+        result.setHtmlMeta(htmlMeta);
 
-        JSONObject htmlContent = getHtmlContent(page);
-        result.put("html_content", htmlContent);
+        DCContent content = getContent(page);
+        result.setContent(content);
 
-        logger.info("json result : {}", result.toJSONString());
+        try {
+            logger.info("json result : {}", mapper.writeValueAsString(result));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
-    private JSONObject getHtmlContent(Page page) {
-        JSONObject result = new JSONObject();
+    private DCContent getContent(Page page) {
+        DCContent result = new DCContent();
         Document doc = Jsoup.parse(((HtmlParseData) page.getParseData()).getHtml());
 
         String content = doc.select(".write_div").html();
@@ -90,19 +98,19 @@ public class DCCrawler extends WebCrawler {
         logger.debug("recommendCount : {}", recommendCount);
         logger.debug("commentCount : {}", commentCount);
 
-        result.put("title", title);
-        result.put("content", content);
-        result.put("nickname", nickname);
-        result.put("ip", ip);
-        result.put("date", date);
-        result.put("view_count", viewCount);
-        result.put("recommend_count", recommendCount);
-        result.put("comment_count", commentCount);
+        result.setTitle(title);
+        result.setContent(content);
+        result.setNickname(nickname);
+        result.setIp(ip);
+        result.setDate(date);
+        result.setView_count(viewCount);
+        result.setRecommend_count(recommendCount);
+        result.setComment_count(commentCount);
         
         return result;
     }
 
-    private JSONObject getHtmlMeta(Page page) {
+    private HtmlMeta getHtmlMeta(Page page) {
         HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
         String text = htmlParseData.getText();
         String html = htmlParseData.getHtml();
@@ -115,10 +123,10 @@ public class DCCrawler extends WebCrawler {
         logger.debug("Html length: {}", htmlLength);
         logger.debug("Number of outgoing links: {}", outgoingLinkCount);
 
-        JSONObject result = new JSONObject();
-        result.put("text_length", textLength);
-        result.put("html_length", htmlLength);
-        result.put("outgoing_link_count", outgoingLinkCount);
+        HtmlMeta result = new HtmlMeta();
+        result.setTextLength(textLength);
+        result.setHtmlLength(htmlLength);
+        result.setOutgoingLinkCount(outgoingLinkCount);
         return result;
     }
 }

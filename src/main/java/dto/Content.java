@@ -7,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class HtmlMeta {
-    private int textLength;
-    private int htmlLength;
-    private int outgoingLinkCount;
+public class Content {
+    private String title;
+    private String content;
 }
