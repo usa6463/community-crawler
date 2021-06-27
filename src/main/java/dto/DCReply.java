@@ -12,6 +12,7 @@ import java.util.ArrayList;
 @Setter
 @NoArgsConstructor
 public class DCReply extends Content {
+    private String id;
     private String nickname;
     private String ip;
     private String date;

@@ -122,12 +122,14 @@ public class DCCrawler extends WebCrawler {
         Elements commentBox = doc.select(".comment_box");
         logger.info("commentCount : {}", commentCount);
 //        logger.info("commentBox : {}", commentBox.html());
-        Elements replyList = null;
+        Elements replyList;
         if (!commentBox.isEmpty()) {
             replyList = commentBox.select("li[id^=comment_li_]");
             replyList.forEach(
                     element -> {
+                        String replyId = element.attr("id");
                         DCReply reply = new DCReply();
+                        reply.setId(replyId);
                         reply.setNickname(element.select("em[title]").html());
                         reply.setIp(element.select(".ip").html());
                         reply.setContent(element.select("p[class^=usertxt]").html());
