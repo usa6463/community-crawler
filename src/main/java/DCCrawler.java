@@ -2,6 +2,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.CrawlingResult;
 import dto.DCContent;
+import dto.DCReply;
 import dto.HtmlMeta;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
@@ -124,10 +125,17 @@ public class DCCrawler extends WebCrawler {
         Elements replyList = null;
         if (!commentBox.isEmpty()) {
             replyList = commentBox.select("li[id^=comment_li_]");
-            logger.info("replyList : {}", replyList.html());
+            replyList.forEach(
+                    element -> {
+                        DCReply reply = new DCReply();
+                        reply.setNickname(element.select("em[title]").html());
+                        reply.setIp(element.select(".ip").html());
+                        reply.setContent(element.select("p[class^=usertxt]").html());
+                        reply.setDate(element.select("span[class^=date_time]").html());
+                        logger.info(reply.toString());
+                    }
+            );
         }
-
-//        replyList.
         
         return result;
     }
