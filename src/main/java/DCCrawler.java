@@ -106,6 +106,17 @@ public class DCCrawler extends WebCrawler {
         result.setView_count(viewCount);
         result.setRecommend_count(recommendCount);
         result.setComment_count(commentCount);
+
+        Elements commentBox = doc.select(".comment_box");
+        logger.info("commentCount : {}", commentCount);
+        logger.info("commentBox : {}", commentBox.html());
+        Elements replyList = null;
+        if (! commentBox.isEmpty()) {
+            replyList = commentBox.select("#comment_li_[0-9]+");
+            logger.info(replyList.html());
+        }
+
+//        replyList.
         
         return result;
     }
