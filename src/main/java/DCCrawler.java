@@ -10,7 +10,8 @@ import edu.uci.ics.crawler4j.url.WebURL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.json.simple.JSONObject;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -107,13 +108,23 @@ public class DCCrawler extends WebCrawler {
         result.setRecommend_count(recommendCount);
         result.setComment_count(commentCount);
 
+        String WEB_DRIVER_ID = "webdriver.chrome.driver";
+        String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
+        System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
+
+        WebDriver driver = new ChromeDriver();
+        driver.get(page.getWebURL().getURL());
+//        logger.info("driver result : {}", driver.getPageSource());
+
+        doc = Jsoup.parse(driver.getPageSource());
+
         Elements commentBox = doc.select(".comment_box");
         logger.info("commentCount : {}", commentCount);
-        logger.info("commentBox : {}", commentBox.html());
+//        logger.info("commentBox : {}", commentBox.html());
         Elements replyList = null;
-        if (! commentBox.isEmpty()) {
-            replyList = commentBox.select("#comment_li_[0-9]+");
-            logger.info(replyList.html());
+        if (!commentBox.isEmpty()) {
+            replyList = commentBox.select("li[id^=comment_li_]");
+            logger.info("replyList : {}", replyList.html());
         }
 
 //        replyList.
