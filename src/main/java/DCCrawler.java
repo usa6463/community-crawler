@@ -1,15 +1,13 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.CrawlingResult;
-import dto.DCContent;
-import dto.DCReply;
-import dto.HtmlMeta;
+import dto.*;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -136,22 +134,42 @@ public class DCCrawler extends WebCrawler {
         replyList = commentBox.select("li[id^=comment_li_]");
         replyList.forEach(
                 element -> {
-                    DCReply reply = parseCommentLi(element);
+                    DCReply reply = parseCommentLi(element, commentBox);
                     result.add(reply);
                 }
         );
         return result;
     }
 
-    private DCReply parseCommentLi(org.jsoup.nodes.Element element) {
-        String replyId = element.attr("id");
+    private DCReply parseCommentLi(Element element, Elements commentBox) {
+        String replyId = element.attr("id").split("_")[2];
         DCReply result = new DCReply();
         result.setId(replyId);
-        Elements innerReplyList = element.select(String.format("li[id^=reply_li_{%s}]", replyId));
+
         result.setNickname(element.select("em[title]").html());
         result.setIp(element.select(".ip").html());
         result.setContent(element.select("p[class^=usertxt]").html());
         result.setDate(element.select("span[class^=date_time]").html());
+        result.setInnerReplyList(getInnerReply(replyId, commentBox));
+        return result;
+    }
+
+    private ArrayList<DCInnerReply> getInnerReply(String replyId, Elements commentBox) {
+        ArrayList<DCInnerReply> result = new ArrayList<>();
+        String cssQuery = String.format("ul[id=reply_list_%s]", replyId);
+        logger.info("cssQuery : {}", cssQuery);
+        Elements innerReplyList = commentBox.select(cssQuery);
+        logger.info("innerReplyList empty? : {}", innerReplyList.isEmpty());
+        innerReplyList.forEach(
+                element -> {
+                    DCInnerReply innerReply = new DCInnerReply();
+                    innerReply.setNickname(element.select("em[title]").html());
+                    innerReply.setIp(element.select(".ip").html());
+                    innerReply.setContent(element.select("p[class^=usertxt]").html());
+                    innerReply.setDate(element.select("span[class^=date_time]").html());
+                    result.add(innerReply);
+                }
+        );
         return result;
     }
 
