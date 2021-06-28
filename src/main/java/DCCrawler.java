@@ -14,6 +14,7 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,9 @@ public class DCCrawler extends WebCrawler {
     public static final String HOST = "https://gall.dcinside.com/board/view/?id=neostock&no=";
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
+
+    private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
+    private final static String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
@@ -109,36 +113,45 @@ public class DCCrawler extends WebCrawler {
         result.setRecommend_count(recommendCount);
         result.setComment_count(commentCount);
 
-        String WEB_DRIVER_ID = "webdriver.chrome.driver";
-        String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
+        result.setReplyList(getReplyList(page));
+
+        return result;
+    }
+
+    private ArrayList<DCReply> getReplyList(Page page) {
+        ArrayList<DCReply> result = new ArrayList<>();
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
 
         WebDriver driver = new ChromeDriver();
         driver.get(page.getWebURL().getURL());
-//        logger.info("driver result : {}", driver.getPageSource());
-
-        doc = Jsoup.parse(driver.getPageSource());
+        Document doc = Jsoup.parse(driver.getPageSource());
+        driver.close();
 
         Elements commentBox = doc.select(".comment_box");
-        logger.info("commentCount : {}", commentCount);
-//        logger.info("commentBox : {}", commentBox.html());
         Elements replyList;
-        if (!commentBox.isEmpty()) {
-            replyList = commentBox.select("li[id^=comment_li_]");
-            replyList.forEach(
-                    element -> {
-                        String replyId = element.attr("id");
-                        DCReply reply = new DCReply();
-                        reply.setId(replyId);
-                        reply.setNickname(element.select("em[title]").html());
-                        reply.setIp(element.select(".ip").html());
-                        reply.setContent(element.select("p[class^=usertxt]").html());
-                        reply.setDate(element.select("span[class^=date_time]").html());
-                        logger.info(reply.toString());
-                    }
-            );
+        if (commentBox.isEmpty()) {
+            return result;
         }
-        
+
+        replyList = commentBox.select("li[id^=comment_li_]");
+        replyList.forEach(
+                element -> {
+                    DCReply reply = parseCommentLi(element);
+                    result.add(reply);
+                }
+        );
+        return result;
+    }
+
+    private DCReply parseCommentLi(org.jsoup.nodes.Element element) {
+        String replyId = element.attr("id");
+        DCReply result = new DCReply();
+        result.setId(replyId);
+        Elements innerReplyList = element.select(String.format("li[id^=reply_li_{%s}]", replyId));
+        result.setNickname(element.select("em[title]").html());
+        result.setIp(element.select(".ip").html());
+        result.setContent(element.select("p[class^=usertxt]").html());
+        result.setDate(element.select("span[class^=date_time]").html());
         return result;
     }
 

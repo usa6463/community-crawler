@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DCInnerReply extends Content {
+public class DCInnerReply {
     private String nickname;
     private String ip;
     private String date;

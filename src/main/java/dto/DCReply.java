@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DCReply extends Content {
+public class DCReply {
     private String id;
     private String nickname;
     private String ip;
