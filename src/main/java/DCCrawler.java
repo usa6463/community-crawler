@@ -17,7 +17,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DCCrawler extends WebCrawler {
-    public static final String HOST = "https://gall.dcinside.com/board/view/?id=neostock&no=";
+    public static final String CONTENT_URL = "https://gall.dcinside.com/board/view/?id=neostock";
+    public static final String LIST_URL = "https://gall.dcinside.com/board/lists/?id=neostock&page=";
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
 
@@ -28,7 +29,7 @@ public class DCCrawler extends WebCrawler {
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
         return !FILTERS.matcher(href).matches()
-                && href.startsWith(HOST);
+                && (href.startsWith(CONTENT_URL) || href.startsWith(LIST_URL));
     }
 
     @Override
