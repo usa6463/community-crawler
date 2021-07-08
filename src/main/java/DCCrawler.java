@@ -25,6 +25,12 @@ public class DCCrawler extends WebCrawler {
     private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     private final static String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
 
+    private final int test;
+
+    public DCCrawler(int test) {
+        this.test = test;
+    }
+
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
@@ -36,6 +42,7 @@ public class DCCrawler extends WebCrawler {
     public void visit(Page page) {
         logUrlInfo(page);
         parseHtml(page);
+        logger.warn("this is test {}", test);
     }
 
     private void logUrlInfo(Page page) {
