@@ -28,10 +28,8 @@ public class Crawler {
 //        https://gall.dcinside.com/board/view/?id=neostock&no=1264154
 
         File file = new File("property.dat");
-        Properties prop = new Properties();
-//        prop.setProperty("LastContentNum", "1257592");
-//        saveProperties(file, prop);
-        loadProperties(file, prop);
+        ConfigController configController = new ConfigController(file);
+        Properties prop = configController.loadProperties();
         System.out.println(prop.get("LastContentNum"));
 
 
@@ -53,18 +51,5 @@ public class Crawler {
 //
 //        // 크롤링 시작하기
 //        controller.start(DCCrawler.class, numberOfCrawlers);
-    }
-
-    private static void saveProperties(File file, Properties p) throws IOException {
-        FileOutputStream fr = new FileOutputStream(file);
-        p.store(fr, "Properties");
-        fr.close();
-    }
-
-    private static void loadProperties(File file, Properties p) throws IOException
-    {
-        FileInputStream fi=new FileInputStream(file);
-        p.load(fi);
-        fi.close();
     }
 }
