@@ -4,24 +4,35 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Crawler {
     public static void main(String[] args) throws Exception {
 
-        int numberOfCrawlers = 1;
+//        int numberOfCrawlers = 1;
 
-        ExecutorService executorService = Executors.newFixedThreadPool(numberOfCrawlers);
+//        ExecutorService executorService = Executors.newFixedThreadPool(numberOfCrawlers);
+//        List<String> seedList = IntStream.range(1, 2).mapToObj(page->String.format("https://gall.dcinside.com/board/lists?id=neostock&page=%d", page)).collect(Collectors.toList());
+//        System.out.println(seedList);
+//        https://gall.dcinside.com/board/view/?id=neostock&no=1264154
 
-        List<String> seedList = Lists.newArrayList("https://gall.dcinside.com/board/lists?id=neostock&page=1");
-        IntStream.range(1, 100)
-                .toArray();
-
+        File file = new File("property.dat");
+        Properties prop = new Properties();
+//        prop.setProperty("LastContentNum", "1257592");
+//        saveProperties(file, prop);
+        loadProperties(file, prop);
+        System.out.println(prop.get("LastContentNum"));
 
 
 
@@ -42,5 +53,18 @@ public class Crawler {
 //
 //        // 크롤링 시작하기
 //        controller.start(DCCrawler.class, numberOfCrawlers);
+    }
+
+    private static void saveProperties(File file, Properties p) throws IOException {
+        FileOutputStream fr = new FileOutputStream(file);
+        p.store(fr, "Properties");
+        fr.close();
+    }
+
+    private static void loadProperties(File file, Properties p) throws IOException
+    {
+        FileInputStream fi=new FileInputStream(file);
+        p.load(fi);
+        fi.close();
     }
 }
