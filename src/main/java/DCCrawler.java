@@ -12,37 +12,39 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DCCrawler extends WebCrawler {
     public static final String CONTENT_URL = "https://gall.dcinside.com/board/view/?id=neostock";
-    public static final String LIST_URL = "https://gall.dcinside.com/board/lists/?id=neostock&page=";
+//    public static final String LIST_URL = "https://gall.dcinside.com/board/lists/?id=neostock";
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
 
     private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     private final static String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
 
-    private final int test;
+    private final LocalDate targetDate;
 
-    public DCCrawler(int test) {
-        this.test = test;
+    public DCCrawler(LocalDate targetDate) {
+        this.targetDate = targetDate;
     }
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
         return !FILTERS.matcher(href).matches()
-                && (href.startsWith(CONTENT_URL) || href.startsWith(LIST_URL));
+                && (href.startsWith(CONTENT_URL));
+//                || href.startsWith(LIST_URL));
     }
 
     @Override
     public void visit(Page page) {
         logUrlInfo(page);
         parseHtml(page);
-        logger.warn("this is test {}", test);
     }
 
     private void logUrlInfo(Page page) {
@@ -64,18 +66,22 @@ public class DCCrawler extends WebCrawler {
     }
 
     private void parseHtml(Page page) {
-        if (!(page.getParseData() instanceof HtmlParseData)) { // html 형태의 Data일 경우
+        if (!(page.getParseData() instanceof HtmlParseData)) { // html 형태의 Data가 아닐 경우
             return;
         }
-
         CrawlingResult result = new CrawlingResult();
         ObjectMapper mapper = new ObjectMapper();
 
+        DCContent content = getContent(page);
+        LocalDate contentDate = LocalDate.parse(content.getDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+
+        if(!contentDate.isBefore(targetDate)){
+            return;
+        }
+        result.setContent(content);
+
         HtmlMeta htmlMeta = getHtmlMeta(page);
         result.setHtmlMeta(htmlMeta);
-
-        DCContent content = getContent(page);
-        result.setContent(content);
 
         try {
             logger.info("json result : {}", mapper.writeValueAsString(result));
@@ -165,9 +171,7 @@ public class DCCrawler extends WebCrawler {
     private ArrayList<DCInnerReply> getInnerReply(String replyId, Elements commentBox) {
         ArrayList<DCInnerReply> result = new ArrayList<>();
         String cssQuery = String.format("ul[id=reply_list_%s]", replyId);
-        logger.info("cssQuery : {}", cssQuery);
         Elements innerReplyList = commentBox.select(cssQuery);
-        logger.info("innerReplyList empty? : {}", innerReplyList.isEmpty());
         innerReplyList.forEach(
                 element -> {
                     DCInnerReply innerReply = new DCInnerReply();
