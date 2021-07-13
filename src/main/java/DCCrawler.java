@@ -12,15 +12,16 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DCCrawler extends WebCrawler {
     public static final String CONTENT_URL = "https://gall.dcinside.com/board/view/?id=neostock";
-//    public static final String LIST_URL = "https://gall.dcinside.com/board/lists/?id=neostock";
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
 
@@ -38,13 +39,26 @@ public class DCCrawler extends WebCrawler {
         String href = url.getURL().toLowerCase();
         return !FILTERS.matcher(href).matches()
                 && (href.startsWith(CONTENT_URL));
-//                || href.startsWith(LIST_URL));
     }
 
     @Override
     public void visit(Page page) {
         logUrlInfo(page);
         parseHtml(page);
+    }
+
+    public static int getLatestContentNum(String pageUrl) throws IOException {
+        Document doc = Jsoup.connect(pageUrl).get();
+        Elements gallNumList = doc.select(".gall_num");
+        int result = gallNumList.stream()
+                .filter(e->e.html()
+                .matches("[0-9]+"))
+                .mapToInt(e->Integer.parseInt(e.html()))
+                .max()
+                .orElseThrow(NoSuchElementException::new);
+
+        logger.info("Latest Content Number : {}", result);
+        return result;
     }
 
     private void logUrlInfo(Page page) {

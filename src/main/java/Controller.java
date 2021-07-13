@@ -10,6 +10,8 @@ import java.util.stream.IntStream;
 public class Controller {
     public static void main(String[] args) throws Exception {
 
+        int latestContentNum = DCCrawler.getLatestContentNum("https://gall.dcinside.com/board/lists?id=neostock");
+
         int numberOfCrawlers = 5;
 
         CrawlConfig config = new CrawlConfig();
@@ -24,20 +26,16 @@ public class Controller {
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
         LocalDate currentDate = LocalDate.now();
-        LocalDate before1Day = currentDate.minusDays(1);
-        System.out.println(before1Day);
-//        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+        LocalDate targetDate = currentDate.minusDays(1);
+        System.out.println(targetDate);
 
         int lastContentNum = 1272610;
 
         // 크롤링 시작 URL 지정하기
-        IntStream.range(1, 100).forEach(
-                x->{
-                    int contentNum = lastContentNum + x;
-                    controller.addSeed(String.format("https://gall.dcinside.com/board/view/?id=neostock&no=%d", contentNum));
-                }
-        );
-        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(before1Day);
+        IntStream.range(lastContentNum, latestContentNum+1)
+                .forEach(contentNum-> { controller.addSeed(String.format("https://gall.dcinside.com/board/view/?id=neostock&no=%d", contentNum)); });
+
+        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate);
         // 크롤링 시작하기
         controller.start(factory, numberOfCrawlers);
 
