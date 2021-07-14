@@ -1,3 +1,4 @@
+import com.beust.jcommander.JCommander;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -7,10 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.IntStream;
 
 public class Controller {
     public static void main(String[] args) throws Exception {
+        Argument argument = new Argument();
+        JCommander.newBuilder()
+                .addObject(argument)
+                .build()
+                .parse(args);
+
         Logger logger = LoggerFactory.getLogger(Controller.class);
 
         int latestContentNum = DCCrawler.getLatestContentNum("https://gall.dcinside.com/board/lists?id=neostock");
@@ -26,15 +34,14 @@ public class Controller {
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-        LocalDate currentDate = LocalDate.now();
-        LocalDate targetDate = currentDate.minusDays(1);
+        LocalDate targetDate = LocalDate.parse(argument.getTargetDate(), DateTimeFormatter.ISO_DATE);
         System.out.println(targetDate);
 
-        int lastContentNum = 1272610;
+        int lastContentNum = argument.getLastContentNum();
         logger.info("lastContentNum : {}, latestContentNum : {}", lastContentNum, latestContentNum);
 
         // 크롤링 시작 URL 지정하기
-        IntStream.range(lastContentNum, latestContentNum+1)
+        IntStream.range(lastContentNum+1, latestContentNum+1)
                 .forEach(contentNum-> controller.addSeed(String.format("https://gall.dcinside.com/board/view/?id=neostock&no=%d", contentNum)));
 
         CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate);
