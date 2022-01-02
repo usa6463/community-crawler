@@ -13,11 +13,7 @@ import java.util.stream.IntStream;
 
 public class Controller {
     public static void main(String[] args) throws Exception {
-        Argument argument = new Argument();
-        JCommander.newBuilder()
-                .addObject(argument)
-                .build()
-                .parse(args);
+        Argument argument = getArgument(args);
 
         Logger logger = LoggerFactory.getLogger(Controller.class);
 
@@ -47,5 +43,14 @@ public class Controller {
         CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate);
         // 크롤링 시작하기
         controller.start(factory, numberOfCrawlers);
+    }
+
+    private static Argument getArgument(String[] args) {
+        Argument argument = new Argument();
+        JCommander.newBuilder()
+                .addObject(argument)
+                .build()
+                .parse(args);
+        return argument;
     }
 }
