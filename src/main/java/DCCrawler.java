@@ -26,12 +26,14 @@ public class DCCrawler extends WebCrawler {
             + "|png|mp3|mp4|zip|gz))$");
 
     private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    private final static String WEB_DRIVER_PATH = "C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
 
     private final LocalDate targetDate;
+    private final String webDriverPath;
 
-    public DCCrawler(LocalDate targetDate) {
+
+    public DCCrawler(LocalDate targetDate, String webDriverPath) {
         this.targetDate = targetDate;
+        this.webDriverPath = webDriverPath;
     }
 
     @Override
@@ -146,7 +148,7 @@ public class DCCrawler extends WebCrawler {
 
     private ArrayList<DCReply> getReplyList(Page page) {
         ArrayList<DCReply> result = new ArrayList<>();
-        System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
+        System.setProperty(WEB_DRIVER_ID, webDriverPath);
 
         WebDriver driver = new ChromeDriver();
         driver.get(page.getWebURL().getURL());

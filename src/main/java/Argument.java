@@ -11,4 +11,7 @@ public class Argument {
 
     @Parameter(names = "--last_content_num", description = "이전에 가장 마지막으로 파싱한 게시글 번호", required = true)
     private int lastContentNum;
+
+    @Parameter(names = "--web_driver_path", description = "chrome driver path")
+    private String webDriverPath="C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
 }

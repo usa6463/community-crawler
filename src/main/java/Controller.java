@@ -39,8 +39,7 @@ public class Controller {
         // 크롤링 시작 URL 지정하기
         IntStream.range(lastContentNum+1, latestContentNum+1)
                 .forEach(contentNum-> controller.addSeed(String.format("https://gall.dcinside.com/board/view/?id=neostock&no=%d", contentNum)));
-
-        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate);
+        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate, argument.getWebDriverPath());
         // 크롤링 시작하기
         controller.start(factory, numberOfCrawlers);
     }
