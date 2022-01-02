@@ -43,6 +43,10 @@ public class DCCrawler extends WebCrawler {
                 && (href.startsWith(CONTENT_URL));
     }
 
+    /**
+     * 스크래핑 대상 페이지에 대해서 처리하는 로직의 main 함수
+     * @param page 페이지 정보 객체
+     */
     @Override
     public void visit(Page page) {
         logUrlInfo(page);
