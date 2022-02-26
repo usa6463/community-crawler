@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -153,8 +154,15 @@ public class DCCrawler extends WebCrawler {
     private ArrayList<DCReply> getReplyList(Page page) {
         ArrayList<DCReply> result = new ArrayList<>();
         System.setProperty(WEB_DRIVER_ID, webDriverPath);
+        System.setProperty("webdriver.chrome.whitelistedIps", "");
 
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+
+        WebDriver driver = new ChromeDriver(chromeOptions);
         driver.get(page.getWebURL().getURL());
         Document doc = Jsoup.parse(driver.getPageSource());
         driver.close();
