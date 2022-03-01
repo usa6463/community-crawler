@@ -16,10 +16,31 @@
     </properties>
 
     <dependencies>
+
+        <!-- elasticsearch-java(4.5.3)와 crawler4j(4.5.10) 디펜던시 충돌로 인해 추가 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/edu.uci.ics/crawler4j -->
         <dependency>
             <groupId>edu.uci.ics</groupId>
             <artifactId>crawler4j</artifactId>
+            <exclusions>
+                <exclusion> <!-- elasticsearch-java(4.5.3)와 crawler4j(4.5.10) 디펜던시 충돌로 인해 추가 -->
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
             <version>4.4.0</version>
         </dependency>
 
@@ -58,13 +79,6 @@
             <artifactId>jcommander</artifactId>
             <version>1.81</version>
         </dependency>
-
-        <dependency>
-            <groupId>co.elastic.clients</groupId>
-            <artifactId>elasticsearch-java</artifactId>
-            <version>${elasticsearch.version}</version>
-        </dependency>
-
 
     </dependencies>
 
