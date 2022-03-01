@@ -12,6 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <jackson.version>2.12.3</jackson.version>
+        <elasticsearch.version>7.16.3</elasticsearch.version>
     </properties>
 
     <dependencies>
@@ -58,6 +59,12 @@
             <version>1.81</version>
         </dependency>
 
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -75,7 +82,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>Controller</mainClass>
                                 </transformer>
                             </transformers>
