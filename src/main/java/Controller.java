@@ -9,6 +9,8 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,12 +43,29 @@ public class Controller {
         int lastContentNum = argument.getLastContentNum();
         logger.info("lastContentNum : {}, latestContentNum : {}", lastContentNum, latestContentNum);
 
+        ElasticsearchClient client = getElasticsearchClient();
+
         // 크롤링 시작 URL 지정하기
         IntStream.range(lastContentNum+1, latestContentNum+1)
                 .forEach(contentNum-> controller.addSeed(String.format("https://gall.dcinside.com/board/view/?id=neostock&no=%d", contentNum)));
-        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate, argument.getWebDriverPath());
+        CrawlController.WebCrawlerFactory<DCCrawler> factory = () -> new DCCrawler(targetDate, argument.getWebDriverPath(), client);
         // 크롤링 시작하기
         controller.start(factory, numberOfCrawlers);
+    }
+
+    private static ElasticsearchClient getElasticsearchClient() {
+        // Create the low-level client
+        // TODO hostname과 port는 argument로 빼기
+        RestClient restClient = RestClient.builder(
+                new HttpHost("localhost", 9200)).build();
+
+        // Create the transport with a Jackson mapper
+        ElasticsearchTransport transport = new RestClientTransport(
+                restClient, new JacksonJsonpMapper());
+
+        // And create the API client
+        ElasticsearchClient client = new ElasticsearchClient(transport);
+        return client;
     }
 
     private static Argument getArgument(String[] args) {

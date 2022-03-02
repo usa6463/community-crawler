@@ -1,4 +1,4 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dto.*;
 import edu.uci.ics.crawler4j.crawler.Page;
@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class DCCrawler extends WebCrawler {
@@ -30,11 +31,13 @@ public class DCCrawler extends WebCrawler {
 
     private final LocalDate targetDate;
     private final String webDriverPath;
+    private final ElasticsearchClient elasticsearchClient;
 
 
-    public DCCrawler(LocalDate targetDate, String webDriverPath) {
+    public DCCrawler(LocalDate targetDate, String webDriverPath, ElasticsearchClient elasticsearchClient) {
         this.targetDate = targetDate;
         this.webDriverPath = webDriverPath;
+        this.elasticsearchClient = elasticsearchClient;
     }
 
     @Override
@@ -46,6 +49,7 @@ public class DCCrawler extends WebCrawler {
 
     /**
      * 스크래핑 대상 페이지에 대해서 처리하는 로직의 main 함수
+     *
      * @param page 페이지 정보 객체
      */
     @Override
@@ -58,9 +62,9 @@ public class DCCrawler extends WebCrawler {
         Document doc = Jsoup.connect(pageUrl).get();
         Elements gallNumList = doc.select(".gall_num");
         int result = gallNumList.stream()
-                .filter(e->e.html()
-                .matches("[0-9]+"))
-                .mapToInt(e->Integer.parseInt(e.html()))
+                .filter(e -> e.html()
+                        .matches("[0-9]+"))
+                .mapToInt(e -> Integer.parseInt(e.html()))
                 .max()
                 .orElseThrow(NoSuchElementException::new);
 
@@ -96,7 +100,7 @@ public class DCCrawler extends WebCrawler {
         DCContent content = getContent(page);
         LocalDate contentDate = LocalDate.parse(content.getDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 
-        if(!contentDate.isBefore(targetDate)){
+        if (!contentDate.isBefore(targetDate)) {
             return;
         }
         result.setContent(content);
@@ -106,7 +110,12 @@ public class DCCrawler extends WebCrawler {
 
         try {
             logger.info("json result : {}", mapper.writeValueAsString(result));
-        } catch (JsonProcessingException e) {
+            elasticsearchClient.create(r -> r
+                    .index("my-index-2") // TODO index값 argument로 빼야함
+                    .document(result)
+                    .id(UUID.randomUUID().toString())
+            );
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
