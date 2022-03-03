@@ -62,8 +62,7 @@ public class Controller {
                 restClient, new JacksonJsonpMapper());
 
         // And create the API client
-        ElasticsearchClient client = new ElasticsearchClient(transport);
-        return client;
+        return new ElasticsearchClient(transport);
     }
 
     private static Argument getArgument(String[] args) {
