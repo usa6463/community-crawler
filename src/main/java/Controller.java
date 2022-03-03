@@ -1,5 +1,4 @@
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -43,7 +42,7 @@ public class Controller {
         int lastContentNum = argument.getLastContentNum();
         logger.info("lastContentNum : {}, latestContentNum : {}", lastContentNum, latestContentNum);
 
-        ElasticsearchClient client = getElasticsearchClient();
+        ElasticsearchClient client = getElasticsearchClient(argument.getElasticsearchHostname(), argument.getElasticsearchPort());
 
         // 크롤링 시작 URL 지정하기
         IntStream.range(lastContentNum+1, latestContentNum+1)
@@ -53,11 +52,10 @@ public class Controller {
         controller.start(factory, numberOfCrawlers);
     }
 
-    private static ElasticsearchClient getElasticsearchClient() {
+    private static ElasticsearchClient getElasticsearchClient(String elasticsearchHostname, int elasticsearchPort) {
         // Create the low-level client
-        // TODO hostname과 port는 argument로 빼기
         RestClient restClient = RestClient.builder(
-                new HttpHost("localhost", 9200)).build();
+                new HttpHost(elasticsearchHostname, elasticsearchPort)).build();
 
         // Create the transport with a Jackson mapper
         ElasticsearchTransport transport = new RestClientTransport(
