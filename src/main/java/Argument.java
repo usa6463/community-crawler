@@ -20,4 +20,7 @@ public class Argument {
 
     @Parameter(names = "--elasticsearch_port", description = "데이터를 적재할 ES의 port")
     private int elasticsearchPort=9200;
+
+    @Parameter(names = "--elasticsearch_index_name", description = "데이터를 적재할 ES의 인덱스명")
+    private String elasticsearchIndexName="my-index-1";
 }

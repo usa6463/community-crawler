@@ -32,12 +32,14 @@ public class DCCrawler extends WebCrawler {
     private final LocalDate targetDate;
     private final String webDriverPath;
     private final ElasticsearchClient elasticsearchClient;
+    private final String elasticsearchIndexName;
 
 
-    public DCCrawler(LocalDate targetDate, String webDriverPath, ElasticsearchClient elasticsearchClient) {
+    public DCCrawler(LocalDate targetDate, String webDriverPath, ElasticsearchClient elasticsearchClient, String elasticsearchIndexName) {
         this.targetDate = targetDate;
         this.webDriverPath = webDriverPath;
         this.elasticsearchClient = elasticsearchClient;
+        this.elasticsearchIndexName = elasticsearchIndexName;
     }
 
     @Override
@@ -111,7 +113,7 @@ public class DCCrawler extends WebCrawler {
         try {
             logger.info("json result : {}", mapper.writeValueAsString(result));
             elasticsearchClient.create(r -> r
-                    .index("my-index-2") // TODO index값 argument로 빼야함
+                    .index(elasticsearchIndexName)
                     .document(result)
                     .id(UUID.randomUUID().toString())
             );
