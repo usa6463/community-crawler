@@ -5,6 +5,9 @@ import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,8 +17,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -29,17 +30,31 @@ public class DCCrawler extends WebCrawler {
 
     private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
 
-    private final LocalDate targetDate;
+    private final DateTime targetDate;
     private final String webDriverPath;
     private final ElasticsearchClient elasticsearchClient;
     private final String elasticsearchIndexName;
 
 
-    public DCCrawler(LocalDate targetDate, String webDriverPath, ElasticsearchClient elasticsearchClient, String elasticsearchIndexName) {
+    public DCCrawler(DateTime targetDate, String webDriverPath, ElasticsearchClient elasticsearchClient, String elasticsearchIndexName) {
         this.targetDate = targetDate;
         this.webDriverPath = webDriverPath;
         this.elasticsearchClient = elasticsearchClient;
         this.elasticsearchIndexName = elasticsearchIndexName;
+    }
+
+    public static int getLatestContentNum(String pageUrl) throws IOException {
+        Document doc = Jsoup.connect(pageUrl).get();
+        Elements gallNumList = doc.select(".gall_num");
+        int result = gallNumList.stream()
+                .filter(e -> e.html()
+                        .matches("[0-9]+"))
+                .mapToInt(e -> Integer.parseInt(e.html()))
+                .max()
+                .orElseThrow(NoSuchElementException::new);
+
+        logger.info("Latest Content Number : {}", result);
+        return result;
     }
 
     @Override
@@ -58,20 +73,6 @@ public class DCCrawler extends WebCrawler {
     public void visit(Page page) {
         logUrlInfo(page);
         parseHtml(page);
-    }
-
-    public static int getLatestContentNum(String pageUrl) throws IOException {
-        Document doc = Jsoup.connect(pageUrl).get();
-        Elements gallNumList = doc.select(".gall_num");
-        int result = gallNumList.stream()
-                .filter(e -> e.html()
-                        .matches("[0-9]+"))
-                .mapToInt(e -> Integer.parseInt(e.html()))
-                .max()
-                .orElseThrow(NoSuchElementException::new);
-
-        logger.info("Latest Content Number : {}", result);
-        return result;
     }
 
     private void logUrlInfo(Page page) {
@@ -100,9 +101,9 @@ public class DCCrawler extends WebCrawler {
         ObjectMapper mapper = new ObjectMapper();
 
         DCContent content = getContent(page);
-        LocalDate contentDate = LocalDate.parse(content.getDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+        LocalDate contentDate = content.getDateTime().toLocalDate();
 
-        if (!contentDate.isBefore(targetDate)) {
+        if (!contentDate.isBefore(targetDate.toLocalDate())) {
             return;
         }
         result.setContent(content);
@@ -111,7 +112,7 @@ public class DCCrawler extends WebCrawler {
         result.setHtmlMeta(htmlMeta);
 
         try {
-            logger.info("json result : {}", mapper.writeValueAsString(result));
+//            logger.info("json result : {}", mapper.writeValueAsString(result));
             elasticsearchClient.create(r -> r
                     .index(elasticsearchIndexName)
                     .document(result)
@@ -132,7 +133,8 @@ public class DCCrawler extends WebCrawler {
         Elements fl = doc.select(".fl");
         String nickname = fl.select(".nickname").html();
         String ip = fl.select(".ip").html();
-        String date = fl.select(".gall_date").html();
+        DateTime contentDateTime = DateTime.parse(fl.select(".gall_date").html(), DateTimeFormat.forPattern("yyyy.MM.dd HH:mm:ss")); // ex) 2022.01.16 11:47:51
+
 
         Elements fr = doc.select(".fr");
         String viewCount = fr.select(".gall_count").html();
@@ -143,7 +145,7 @@ public class DCCrawler extends WebCrawler {
         logger.debug("content : {}", content);
         logger.debug("nickname : {}", nickname);
         logger.debug("ip : {}", ip);
-        logger.debug("date : {}", date);
+        logger.debug("content date : {}", contentDateTime);
         logger.debug("viewCount : {}", viewCount);
         logger.debug("recommendCount : {}", recommendCount);
         logger.debug("commentCount : {}", commentCount);
@@ -152,10 +154,10 @@ public class DCCrawler extends WebCrawler {
         result.setContent(content);
         result.setNickname(nickname);
         result.setIp(ip);
-        result.setDate(date);
-        result.setView_count(viewCount);
-        result.setRecommend_count(recommendCount);
-        result.setComment_count(commentCount);
+        result.setDateTime(contentDateTime);
+        result.setViewCount(viewCount);
+        result.setRecommendCount(recommendCount);
+        result.setCommentCount(commentCount);
 
         result.setReplyList(getReplyList(page));
 

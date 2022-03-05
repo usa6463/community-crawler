@@ -3,6 +3,7 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.beust.jcommander.JCommander;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -10,6 +11,8 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,7 @@ public class Controller {
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
-        LocalDate targetDate = LocalDate.parse(argument.getTargetDate(), DateTimeFormatter.ISO_DATE);
+        DateTime targetDate = DateTime.parse(argument.getTargetDate(), DateTimeFormat.forPattern("yyyy-mm-dd"));
         System.out.println(targetDate);
 
         int lastContentNum = argument.getLastContentNum();
@@ -58,8 +61,10 @@ public class Controller {
                 new HttpHost(elasticsearchHostname, elasticsearchPort)).build();
 
         // Create the transport with a Jackson mapper
+        JacksonJsonpMapper jacksonJsonpMapper = new JacksonJsonpMapper();
+        jacksonJsonpMapper.objectMapper().registerModule(new JodaModule());
         ElasticsearchTransport transport = new RestClientTransport(
-                restClient, new JacksonJsonpMapper());
+                restClient, jacksonJsonpMapper);
 
         // And create the API client
         return new ElasticsearchClient(transport);

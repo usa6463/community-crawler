@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 
@@ -14,9 +15,9 @@ import java.util.ArrayList;
 public class DCContent extends Content {
     private String nickname;
     private String ip;
-    private String date;
-    private String view_count;
-    private String recommend_count;
-    private String comment_count;
+    private DateTime dateTime;
+    private String viewCount;
+    private String recommendCount;
+    private String commentCount;
     private ArrayList<DCReply> replyList;
 }
