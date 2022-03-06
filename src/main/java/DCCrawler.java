@@ -42,6 +42,20 @@ public class DCCrawler extends WebCrawler {
         this.elasticsearchIndexName = elasticsearchIndexName;
     }
 
+    public static int getLatestContentNum(String pageUrl) throws IOException {
+        Document doc = Jsoup.connect(pageUrl).get();
+        Elements gallNumList = doc.select(".gall_num");
+        int result = gallNumList.stream()
+                .filter(e -> e.html()
+                        .matches("[0-9]+"))
+                .mapToInt(e -> Integer.parseInt(e.html()))
+                .max()
+                .orElseThrow(NoSuchElementException::new);
+
+        logger.info("Latest Content Number : {}", result);
+        return result;
+    }
+
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
@@ -58,20 +72,6 @@ public class DCCrawler extends WebCrawler {
     public void visit(Page page) {
         logUrlInfo(page);
         parseHtml(page);
-    }
-
-    public static int getLatestContentNum(String pageUrl) throws IOException {
-        Document doc = Jsoup.connect(pageUrl).get();
-        Elements gallNumList = doc.select(".gall_num");
-        int result = gallNumList.stream()
-                .filter(e -> e.html()
-                        .matches("[0-9]+"))
-                .mapToInt(e -> Integer.parseInt(e.html()))
-                .max()
-                .orElseThrow(NoSuchElementException::new);
-
-        logger.info("Latest Content Number : {}", result);
-        return result;
     }
 
     private void logUrlInfo(Page page) {
@@ -128,7 +128,8 @@ public class DCCrawler extends WebCrawler {
 
         String content = doc.select(".write_div").html();
         String title = doc.select(".title_subject").html();
-        String url = page.getWebURL().getURL();
+        String url = page.getWebURL()
+                .getURL();
 
         Elements fl = doc.select(".fl");
         String nickname = fl.select(".nickname").html();
