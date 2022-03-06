@@ -130,6 +130,8 @@ public class DCCrawler extends WebCrawler {
         String title = doc.select(".title_subject").html();
         String url = page.getWebURL()
                 .getURL();
+        String pattern = "\\S+no=(\\d+).*";
+        int contentNum = Integer.parseInt(url.replaceAll(pattern, "$1"));
 
         Elements fl = doc.select(".fl");
         String nickname = fl.select(".nickname").html();
@@ -149,6 +151,8 @@ public class DCCrawler extends WebCrawler {
         logger.debug("viewCount : {}", viewCount);
         logger.debug("recommendCount : {}", recommendCount);
         logger.debug("commentCount : {}", commentCount);
+        logger.debug("url : {}", url);
+        logger.debug("contentNum : {}", contentNum);
 
         result.setTitle(title);
         result.setUrl(url);
@@ -159,6 +163,7 @@ public class DCCrawler extends WebCrawler {
         result.setViewCount(viewCount);
         result.setRecommendCount(recommendCount);
         result.setCommentCount(commentCount);
+        result.setContentNum(contentNum);
 
         result.setReplyList(getReplyList(page));
 
