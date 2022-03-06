@@ -100,7 +100,7 @@ public class DCCrawler extends WebCrawler {
         ObjectMapper mapper = new ObjectMapper();
 
         DCContent content = getContent(page);
-        LocalDate contentDate = LocalDate.parse(content.getDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+        LocalDate contentDate = LocalDate.parse(content.getDt(), DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
 
         if (!contentDate.isBefore(targetDate)) {
             return;
@@ -128,6 +128,7 @@ public class DCCrawler extends WebCrawler {
 
         String content = doc.select(".write_div").html();
         String title = doc.select(".title_subject").html();
+        String url = page.getWebURL().getURL();
 
         Elements fl = doc.select(".fl");
         String nickname = fl.select(".nickname").html();
@@ -149,13 +150,14 @@ public class DCCrawler extends WebCrawler {
         logger.debug("commentCount : {}", commentCount);
 
         result.setTitle(title);
+        result.setUrl(url);
         result.setContent(content);
         result.setNickname(nickname);
         result.setIp(ip);
-        result.setDate(date);
-        result.setView_count(viewCount);
-        result.setRecommend_count(recommendCount);
-        result.setComment_count(commentCount);
+        result.setDt(date);
+        result.setViewCount(viewCount);
+        result.setRecommendCount(recommendCount);
+        result.setCommentCount(commentCount);
 
         result.setReplyList(getReplyList(page));
 

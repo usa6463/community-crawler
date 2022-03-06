@@ -14,9 +14,10 @@ import java.util.ArrayList;
 public class DCContent extends Content {
     private String nickname;
     private String ip;
-    private String date;
-    private String view_count;
-    private String recommend_count;
-    private String comment_count;
+    private String dt;
+    private String viewCount;
+    private String recommendCount;
+    private String commentCount;
     private ArrayList<DCReply> replyList;
+    private int contentNum;
 }
