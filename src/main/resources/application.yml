@@ -1,2 +1,3 @@
-test:
-  address: 123
+spring:
+  profiles:
+    default: "local"
