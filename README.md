@@ -3,6 +3,9 @@
 ### JIRA
 https://fenderi.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=CSA
 
+### profile 설정
+--spring.profiles.active={dev, local, prod 중 택1)
+
 ### PARAMETER
 --target_date : target date 이전 날짜의 게시글만 수집한다. format: yyyy-mm-dd
 
