@@ -1,3 +1,5 @@
+package org.example.community.crawler;
+
 import com.beust.jcommander.Parameter;
 import lombok.Getter;
 
