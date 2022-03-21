@@ -1,3 +1,5 @@
+package org.example.community.crawler;
+
 import com.beust.jcommander.Parameter;
 import lombok.Getter;
 
@@ -14,4 +16,13 @@ public class Argument {
 
     @Parameter(names = "--web_driver_path", description = "chrome driver path")
     private String webDriverPath="C:\\Program Files\\chromedriver_win32\\chromedriver.exe";
+
+    @Parameter(names = "--elasticsearch_hostname", description = "데이터를 적재할 ES의 hostname")
+    private String elasticsearchHostname="localhost";
+
+    @Parameter(names = "--elasticsearch_port", description = "데이터를 적재할 ES의 port")
+    private int elasticsearchPort=9200;
+
+    @Parameter(names = "--elasticsearch_index_name", description = "데이터를 적재할 ES의 인덱스명")
+    private String elasticsearchIndexName="my-index-1";
 }

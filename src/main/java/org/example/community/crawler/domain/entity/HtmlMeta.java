@@ -1,4 +1,4 @@
-package dto;
+package org.example.community.crawler.domain.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
