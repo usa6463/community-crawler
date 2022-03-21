@@ -25,7 +25,7 @@
 //
 //        Logger logger = LoggerFactory.getLogger(Controller.class);
 //
-//        int latestContentNum = DCCrawler.getLatestContentNum("https://gall.dcinside.com/board/lists?id=neostock");
+//        int latestContentNum = org.example.community.crawler.DCCrawler.getLatestContentNum("https://gall.dcinside.com/board/lists?id=neostock");
 //        int numberOfCrawlers = 5;
 //
 //        CrawlConfig config = new CrawlConfig();
