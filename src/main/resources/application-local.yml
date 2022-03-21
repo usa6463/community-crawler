@@ -4,7 +4,8 @@ spring:
 
 app:
   target_date: "2022-03-19"
-  web_driver_path: "C:\Program Files\chromedriver_win32\chromedriver.exe"
+  web_driver_path: "C:\\Program Files\\chromedriver_win32\\chromedriver.exe"
   es_index_name: "my-index-1"
+  last_content_num: "2430001"
 
 
