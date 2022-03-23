@@ -34,21 +34,28 @@ public class DCScrapper {
 
     private void traverseBoard() throws IOException {
         Document doc = Jsoup.connect("https://gall.dcinside.com/board/lists/?id=neostock&page=1").get();
+
         Elements gallDateList = doc.select(".gall_date");
         Elements gallNumList = doc.select(".gall_num");
         Elements gallCountList = doc.select(".gall_count");
-        int minListSize = Collections.min(Arrays.asList(gallDateList.size(), gallNumList.size(), gallCountList.size()));
+        Elements gallUrlList = doc.select(".gall_tit > a");
 
+        int minListSize = Collections.min(Arrays.asList(gallDateList.size(),
+                gallNumList.size(), gallCountList.size(), gallUrlList.size()));
+
+        log.info("gallUrlList : {}", gallUrlList);
+        log.info("minListSIze : {}", minListSize);
 
         List<DCBoard> list = IntStream
                 .range(0, minListSize)
                 .mapToObj(i -> new DCBoard(
                         gallDateList.get(i).ownText(),
                         gallNumList.get(i).ownText(),
-                        gallCountList.get(i).ownText()
+                        gallCountList.get(i).ownText(),
+                        gallUrlList.get(i).attr("href")
                 ))
-                .filter(obj-> !obj.getCount().equals("-")) // 설문 필터링
-                .filter(obj-> !obj.getNum().equals("공지")) // 공지 필터링
+                .filter(obj -> !obj.getCount().equals("-")) // 설문 필터링
+                .filter(obj -> !obj.getNum().equals("공지")) // 공지 필터링
                 .collect(Collectors.toList());
 
         log.info("{}", list);
