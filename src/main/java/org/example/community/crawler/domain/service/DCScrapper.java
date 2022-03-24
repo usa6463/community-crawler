@@ -8,6 +8,9 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,8 +26,11 @@ public class DCScrapper {
     public void scrap() {
         log.info("DCScrapper start");
 
+        String targetDateStr = "2022-03-22";
+        LocalDate targetDate = LocalDate.parse(targetDateStr);
+
         try {
-            traverseBoard();
+            traverseBoard(targetDate);
             // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
@@ -34,14 +40,27 @@ public class DCScrapper {
 
     /**
      * 게시판 순회. target_date 이전 날짜 나오기 시작하면 중단
-     * 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
+     * @param targetDate 수집대상 게시글 작성일
      * @throws IOException
+     * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
      */
-    private void traverseBoard() throws IOException {
+    private List<DCPost> traverseBoard(LocalDate targetDate) throws IOException, InterruptedException {
         int boardPage = 1;
-        List<DCPost> list = getDcBoards(boardPage, "https://gall.dcinside.com/board/lists/?id=neostock&page=%d");
-
-        log.info("{}", list);
+        Boolean targetDateFlag = true;
+        List<DCPost> result = new ArrayList<>();
+        while (targetDateFlag) {
+            List<DCPost> list = getDcBoards(boardPage, "https://gall.dcinside.com/board/lists/?id=neostock&page=%d");
+            long count = list.stream().filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).isBefore(targetDate)).count();
+            if (count > 0) {
+                targetDateFlag = false;
+            }
+            log.info("Count : {}", count);
+            log.info("{}", list);
+            result.addAll(list);
+            boardPage = boardPage + 1;
+            Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
+        }
+        return result;
     }
 
     /**
@@ -65,7 +84,7 @@ public class DCScrapper {
         List<DCPost> list = IntStream
                 .range(0, minListSize)
                 .mapToObj(i -> new DCPost(
-                        gallDateList.get(i).ownText(),
+                        gallDateList.get(i).attr("title"),
                         gallNumList.get(i).ownText(),
                         gallCountList.get(i).ownText(),
                         gallUrlList.get(i).attr("href")
