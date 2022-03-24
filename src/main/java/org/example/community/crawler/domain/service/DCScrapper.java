@@ -17,6 +17,9 @@ import java.util.stream.IntStream;
 @Service
 @Slf4j
 public class DCScrapper {
+    /**
+     * DC 인사이드 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
+     */
     public void scrap() {
         log.info("DCScrapper start");
 
@@ -33,18 +36,16 @@ public class DCScrapper {
     }
 
     private void traverseBoard() throws IOException {
-        Document doc = Jsoup.connect("https://gall.dcinside.com/board/lists/?id=neostock&page=1").get();
+        int boardPage = 1;
+        Document doc = Jsoup.connect(String.format("https://gall.dcinside.com/board/lists/?id=neostock&page=%d", boardPage)).get();
 
         Elements gallDateList = doc.select(".gall_date");
         Elements gallNumList = doc.select(".gall_num");
         Elements gallCountList = doc.select(".gall_count");
-        Elements gallUrlList = doc.select(".gall_tit > a");
+        Elements gallUrlList = doc.select(".gall_tit > a:not(.reply_numbox)");
 
         int minListSize = Collections.min(Arrays.asList(gallDateList.size(),
                 gallNumList.size(), gallCountList.size(), gallUrlList.size()));
-
-        log.info("gallUrlList : {}", gallUrlList);
-        log.info("minListSIze : {}", minListSize);
 
         List<DCBoard> list = IntStream
                 .range(0, minListSize)
