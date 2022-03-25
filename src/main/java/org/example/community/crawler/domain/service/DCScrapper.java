@@ -1,10 +1,12 @@
 package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.DCPost;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,6 +31,12 @@ public class DCScrapper {
      * 게시판 번호 붙이는 포맷
      */
     public static final String DC_BOARD_PAGE_URL_FORMAT = "%s&page=%d";
+    private AppConfiguration appConfiguration;
+
+    @Autowired
+    public DCScrapper(AppConfiguration appConfiguration) {
+        this.appConfiguration = appConfiguration;
+    }
 
     /**
      * DC 인사이드 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
@@ -36,11 +44,11 @@ public class DCScrapper {
     public void scrap() {
         log.info("DCScrapper start");
 
-        String targetDateStr = "2022-03-23";
+        String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
 
         try {
-            traverseBoard(targetDate, "https://gall.dcinside.com/board/lists/?id=rlike");
+            traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
             // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
