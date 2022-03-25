@@ -1,5 +1,8 @@
 # community-crawler
 
+### 참고
+- 현재 마이너 갤러리 지원하지 않음(https://gall.dcinside.com/mgallery/board/...)
+
 ### JIRA
 https://fenderi.atlassian.net/secure/RapidBoard.jspa?rapidView=1&projectKey=CSA
 
