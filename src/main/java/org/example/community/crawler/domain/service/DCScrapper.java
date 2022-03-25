@@ -114,8 +114,12 @@ public class DCScrapper {
                         gallCountList.get(i).ownText(),
                         gallUrlList.get(i).attr("href")
                 ))
-                .filter(obj -> !obj.getCount().equals("-")) // 설문 필터링
-                .filter(obj -> !obj.getNum().equals("공지")) // 공지 필터링
+                .filter(obj -> obj.getCount()
+                        .chars()
+                        .allMatch(Character::isDigit)) // 조회수가 "-" 인 경우 필터링
+                .filter(obj -> obj.getNum()
+                        .chars()
+                        .allMatch(Character::isDigit)) // 번호가 공지, 뉴스, 설문 인 경우 필터링
                 .collect(Collectors.toList());
         return list;
     }
