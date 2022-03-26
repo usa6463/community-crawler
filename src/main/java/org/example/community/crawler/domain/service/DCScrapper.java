@@ -60,10 +60,10 @@ public class DCScrapper {
     /**
      * 게시판 순회. target_date 이전 날짜 나오기 시작하면 중단
      *
-     * @param targetDate 수집대상 게시글 작성일
+     * @param targetDate   수집대상 게시글 작성일
      * @param boardBaseUrl 순회 대상 게시판 URL(페이지 번호 제외)
      * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
-     * @throws IOException
+     * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
     private List<DCPost> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
@@ -71,9 +71,12 @@ public class DCScrapper {
         List<DCPost> result = new ArrayList<>();
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
+
             List<DCPost> list = getDcPosts(boardUrl);
             targetDateFlag = checkTargetDateBeforePost(targetDate, list);
-            result.addAll(list);
+
+            result.addAll(getTargetDatePost(targetDate, list));
+
             boardPage = boardPage + 1;
             Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
         }
@@ -81,9 +84,24 @@ public class DCScrapper {
     }
 
     /**
-     * 게시판 페이지에 target date 이전 날짜의 게시글이 있는지 체크
+     * target date의 게시글만 남도록 필터링 한다.
+     *
      * @param targetDate 수집하고자 하는 게시글 등록일자
-     * @param postList 게시판 페이지에서 수집한 게시글 정보 리스트
+     * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
+     * @return target date 게시글만 남은 리스트
+     */
+    private List<DCPost> getTargetDatePost(LocalDate targetDate, List<DCPost> postList) {
+        return postList.stream()
+                .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
+                        .isEqual(targetDate))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 게시판 페이지에 target date 이전 날짜의 게시글이 있는지 체크
+     *
+     * @param targetDate 수집하고자 하는 게시글 등록일자
+     * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
      * @return target date 이전 날짜 게시글이 없으면 true, 있으면 false
      */
     private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<DCPost> postList) {
@@ -98,9 +116,9 @@ public class DCScrapper {
     /**
      * DC 게시판을 파싱하여 게시글 정보 수집
      *
-     * @param boardUrl     스크래핑할 페이지 URL
+     * @param boardUrl 스크래핑할 페이지 URL
      * @return 게시글 정보 리스트
-     * @throws IOException
+     * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
     private List<DCPost> getDcPosts(String boardUrl) throws IOException {
         log.info("get Post info from {}", boardUrl);
