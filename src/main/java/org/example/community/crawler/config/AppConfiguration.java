@@ -13,4 +13,10 @@ public class AppConfiguration {
 
     @Value("${app.target_date}")
     String targetDate;
+
+    @Value("${app.web_driver_path}")
+    String webDriverPath;
+
+    @Value("${app.es_index_name}")
+    String esIndexName;
 }

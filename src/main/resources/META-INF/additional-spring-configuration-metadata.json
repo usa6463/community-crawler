@@ -3,26 +3,21 @@
     {
       "name": "app.board_base_url",
       "type": "java.lang.String",
-      "description": "Description for app.board_base_url."
+      "description": "스크래핑 대상 게시글이 있는 게시판 링크"
     },
     {
       "name": "app.target_date",
       "type": "java.lang.String",
-      "description": "Description for app.target_date."
+      "description": "게시글 수집 대상 일자"
     },
     {
       "name": "app.web_driver_path",
       "type": "java.lang.String",
-      "description": "Description for app.web_driver_path."
+      "description": "selenium에서 사용할 웹 드라이버 파일 경로"
     },
     {
       "name": "app.es_index_name",
       "type": "java.lang.String",
-      "description": "Description for app.es_index_name."
-    },
-    {
-      "name": "app.last_content_num",
-      "type": "java.lang.String",
-      "description": "Description for app.last_content_num."
+      "description": "스크래핑 결과 적재 대상 index명"
     }
   ] }

@@ -2,10 +2,17 @@ package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
+import org.example.community.crawler.domain.entity.DCContent;
+import org.example.community.crawler.domain.entity.DCInnerReply;
 import org.example.community.crawler.domain.entity.DCPost;
+import org.example.community.crawler.domain.entity.DCReply;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +38,19 @@ public class DCScrapper {
      * 게시판 번호 붙이는 포맷
      */
     public static final String DC_BOARD_PAGE_URL_FORMAT = "%s&page=%d";
+    /**
+     * DC 도메인 주소
+     */
+    public static final String DC_DOMAIN = "https://gall.dcinside.com";
+    /**
+     * 게시글 url에서 게시글 번호를 추출하기 위한 regex pattern
+     */
+    public static final String PATTERN_FOR_CONTENT_NUM = "\\S+no=(\\d+).*";
+    /**
+     * selenium에서 사용할 웹 드라이버 아이디
+     */
+    private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
+
     private final AppConfiguration appConfiguration;
 
     @Autowired
@@ -48,13 +68,153 @@ public class DCScrapper {
         LocalDate targetDate = LocalDate.parse(targetDateStr);
 
         try {
-            List<DCPost> list = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+            List<DCPost> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+
+            scrapPosts(targetPostList);
 
             // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
             log.error("{}", e.getMessage());
         }
+    }
+
+    private void scrapPosts(List<DCPost> targetPostList) {
+        targetPostList.forEach(post -> {
+            String url = DC_DOMAIN + post.getUrl();
+            log.debug("target post url: {}", url);
+
+            Document doc = null;
+            try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
+                doc = Jsoup.connect(url).get();
+            } catch (IOException e) {
+                log.error("{}", e.getMessage());
+            }
+
+            DCContent dcContent = getContent(url, doc);
+            log.info("dcContent : {}", dcContent);
+        });
+    }
+
+    /**
+     * 게시글 내용 파싱하여 반환
+     *
+     * @param url 파싱할 게시글 url
+     * @param doc 파싱할 게시글 Document 객체
+     * @return DCContent 데이터 객체 반환
+     */
+    private DCContent getContent(String url, Document doc) {
+        DCContent result = new DCContent();
+
+        String content = doc.select(".write_div").html();
+        String title = doc.select(".title_subject").html();
+        int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
+
+        Elements fl = doc.select(".fl");
+        String nickname = fl.select(".nickname").html();
+        String ip = fl.select(".ip").html();
+        String date = fl.select(".gall_date").html();
+
+        Elements fr = doc.select(".fr");
+        String viewCount = fr.select(".gall_count").html();
+        String recommendCount = fr.select(".gall_reply_num").html();
+        String commentCount = fr.select(".gall_comment").html();
+
+        result.setTitle(title);
+        result.setUrl(url);
+        result.setContent(content);
+        result.setNickname(nickname);
+        result.setIp(ip);
+        result.setDt(date);
+        result.setViewCount(viewCount);
+        result.setRecommendCount(recommendCount);
+        result.setCommentCount(commentCount);
+        result.setContentNum(contentNum);
+
+        result.setReplyList(getReplyList(url));
+        return result;
+    }
+
+    /**
+     * 댓글 정보 파싱하여 반환
+     *
+     * @param url 파싱할 게시글 url
+     * @return 파싱된 댓글 리스트 반환
+     */
+    private ArrayList<DCReply> getReplyList(String url) {
+        ArrayList<DCReply> result = new ArrayList<>();
+        System.setProperty(WEB_DRIVER_ID, appConfiguration.getWebDriverPath());
+        System.setProperty("webdriver.chrome.whitelistedIps", "");
+
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+
+        WebDriver driver = new ChromeDriver(chromeOptions);
+        driver.get(url);
+        Document doc = Jsoup.parse(driver.getPageSource());
+        driver.close();
+
+        Elements commentBox = doc.select(".comment_box");
+        Elements replyList;
+        if (commentBox.isEmpty()) {
+            return result;
+        }
+
+        replyList = commentBox.select("li[id^=comment_li_]");
+        replyList.forEach(
+                element -> {
+                    DCReply reply = parseCommentLi(element, commentBox);
+                    result.add(reply);
+                }
+        );
+        return result;
+    }
+
+    /**
+     * id가 comment_li인 태그 내용을 파싱
+     *
+     * @param element comment_li의 element
+     * @param commentBox comment_box의 elements
+     * @return 파싱결과 데이터 객체 반환
+     */
+    private DCReply parseCommentLi(Element element, Elements commentBox) {
+        String replyId = element.attr("id").split("_")[2];
+        DCReply result = new DCReply();
+        result.setId(replyId);
+
+        result.setNickname(element.select("em[title]").html());
+        result.setIp(element.select(".ip").html());
+        result.setContent(element.select("p[class^=usertxt]").html());
+        result.setDate(element.select("span[class^=date_time]").html());
+        result.setInnerReplyList(getInnerReply(replyId, commentBox));
+        return result;
+    }
+
+    /**
+     * 내부 댓글 파싱하여 반환
+     *
+     * @param replyId 댓글 id
+     * @param commentBox comment_box의 elements
+     * @return 파싱결과 데이터 객체 반환
+     */
+    private ArrayList<DCInnerReply> getInnerReply(String replyId, Elements commentBox) {
+        ArrayList<DCInnerReply> result = new ArrayList<>();
+        String cssQuery = String.format("ul[id=reply_list_%s]", replyId);
+        Elements innerReplyList = commentBox.select(cssQuery);
+        innerReplyList.forEach(
+                element -> {
+                    DCInnerReply innerReply = new DCInnerReply();
+                    innerReply.setNickname(element.select("em[title]").html());
+                    innerReply.setIp(element.select(".ip").html());
+                    innerReply.setContent(element.select("p[class^=usertxt]").html());
+                    innerReply.setDate(element.select("span[class^=date_time]").html());
+                    result.add(innerReply);
+                }
+        );
+        return result;
     }
 
     /**
