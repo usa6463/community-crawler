@@ -49,7 +49,7 @@ public class DCScrapper {
 
         try {
             List<DCPost> list = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
-            log.info("post list : {}", list);
+
             // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
@@ -80,6 +80,8 @@ public class DCScrapper {
             boardPage = boardPage + 1;
             Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
         }
+        log.info("last traversed page : {}", boardPage);
+        log.info("target post num : {}, list : {}", result.size(), result);
         return result;
     }
 
@@ -121,7 +123,7 @@ public class DCScrapper {
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
     private List<DCPost> getDcPosts(String boardUrl) throws IOException {
-        log.info("get Post info from {}", boardUrl);
+        log.debug("get Post info from {}", boardUrl);
         Document doc = Jsoup.connect(boardUrl).get();
 
         Elements gallDateList = doc.select(".gall_date");

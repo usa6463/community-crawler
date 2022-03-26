@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "app.board_base_url",
+      "type": "java.lang.String",
+      "description": "Description for app.board_base_url."
+    },
+    {
+      "name": "app.target_date",
+      "type": "java.lang.String",
+      "description": "Description for app.target_date."
+    },
+    {
+      "name": "app.web_driver_path",
+      "type": "java.lang.String",
+      "description": "Description for app.web_driver_path."
+    },
+    {
+      "name": "app.es_index_name",
+      "type": "java.lang.String",
+      "description": "Description for app.es_index_name."
+    },
+    {
+      "name": "app.last_content_num",
+      "type": "java.lang.String",
+      "description": "Description for app.last_content_num."
+    }
+  ] }

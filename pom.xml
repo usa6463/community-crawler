@@ -50,6 +50,13 @@
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${springboot.version}</version>
+            <optional>true</optional>
+        </dependency>
+
 <!--        &lt;!&ndash; elasticsearch-java(4.5.3)와 crawler4j(4.5.10) 디펜던시 충돌로 인해 추가 &ndash;&gt;-->
 <!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient &ndash;&gt;-->
 <!--        <dependency>-->
