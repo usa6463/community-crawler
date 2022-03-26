@@ -31,7 +31,7 @@ public class DCScrapper {
      * 게시판 번호 붙이는 포맷
      */
     public static final String DC_BOARD_PAGE_URL_FORMAT = "%s&page=%d";
-    private AppConfiguration appConfiguration;
+    private final AppConfiguration appConfiguration;
 
     @Autowired
     public DCScrapper(AppConfiguration appConfiguration) {
@@ -48,7 +48,8 @@ public class DCScrapper {
         LocalDate targetDate = LocalDate.parse(targetDateStr);
 
         try {
-            traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+            List<DCPost> list = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+            log.info("post list : {}", list);
             // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
@@ -66,25 +67,32 @@ public class DCScrapper {
      */
     private List<DCPost> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
-        Boolean targetDateFlag = true;
+        boolean targetDateFlag = true;
         List<DCPost> result = new ArrayList<>();
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
             List<DCPost> list = getDcPosts(boardUrl);
-            long targetDateBeforePostCount = list.stream()
-                    .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
-                            .isBefore(targetDate))
-                    .count();
-            if (targetDateBeforePostCount > 0) {
-                targetDateFlag = false;
-            }
-            log.info("targetDateBeforePostCount : {}", targetDateBeforePostCount);
-            log.info("{}", list);
+            targetDateFlag = checkTargetDateBeforePost(targetDate, list);
             result.addAll(list);
             boardPage = boardPage + 1;
             Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
         }
         return result;
+    }
+
+    /**
+     * 게시판 페이지에 target date 이전 날짜의 게시글이 있는지 체크
+     * @param targetDate 수집하고자 하는 게시글 등록일자
+     * @param postList 게시판 페이지에서 수집한 게시글 정보 리스트
+     * @return target date 이전 날짜 게시글이 없으면 true, 있으면 false
+     */
+    private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<DCPost> postList) {
+        long targetDateBeforePostCount = postList.stream()
+                .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
+                        .isBefore(targetDate))
+                .count();
+        log.debug("targetDateBeforePostCount : {}", targetDateBeforePostCount);
+        return targetDateBeforePostCount <= 0;
     }
 
     /**
@@ -106,7 +114,7 @@ public class DCScrapper {
         int minListSize = Collections.min(Arrays.asList(gallDateList.size(),
                 gallNumList.size(), gallCountList.size(), gallUrlList.size()));
 
-        List<DCPost> list = IntStream
+        return IntStream
                 .range(0, minListSize)
                 .mapToObj(i -> new DCPost(
                         gallDateList.get(i).attr("title"),
@@ -121,6 +129,5 @@ public class DCScrapper {
                         .chars()
                         .allMatch(Character::isDigit)) // 번호가 공지, 뉴스, 설문 인 경우 필터링
                 .collect(Collectors.toList());
-        return list;
     }
 }
