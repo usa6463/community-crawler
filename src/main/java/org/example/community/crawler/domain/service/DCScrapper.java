@@ -72,13 +72,17 @@ public class DCScrapper {
 
             scrapPosts(targetPostList);
 
-            // 각 게시글 대상으로 스크래핑 및 ES 저장
             // rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
             log.error("{}", e.getMessage());
         }
     }
 
+    /**
+     * 각 게시글 대상으로 스크래핑 및 ES 저장
+     *
+     * @param targetPostList 스크래핑 대상 게시글 정보 리스트
+     */
     private void scrapPosts(List<DCPost> targetPostList) {
         targetPostList.forEach(post -> {
             String url = DC_DOMAIN + post.getUrl();
@@ -176,7 +180,7 @@ public class DCScrapper {
     /**
      * id가 comment_li인 태그 내용을 파싱
      *
-     * @param element comment_li의 element
+     * @param element    comment_li의 element
      * @param commentBox comment_box의 elements
      * @return 파싱결과 데이터 객체 반환
      */
@@ -196,7 +200,7 @@ public class DCScrapper {
     /**
      * 내부 댓글 파싱하여 반환
      *
-     * @param replyId 댓글 id
+     * @param replyId    댓글 id
      * @param commentBox comment_box의 elements
      * @return 파싱결과 데이터 객체 반환
      */
