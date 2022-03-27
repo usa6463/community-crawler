@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.DCContent;
 import org.example.community.crawler.domain.entity.DCInnerReply;
-import org.example.community.crawler.domain.entity.DCPost;
+import org.example.community.crawler.domain.entity.DCPostMeta;
 import org.example.community.crawler.domain.entity.DCReply;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -68,7 +68,7 @@ public class DCScrapper {
         LocalDate targetDate = LocalDate.parse(targetDateStr);
 
         try {
-            List<DCPost> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+            List<DCPostMeta> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
 
             scrapPosts(targetPostList);
 
@@ -79,24 +79,23 @@ public class DCScrapper {
     }
 
     /**
-     * 각 게시글 대상으로 스크래핑 및 ES 저장
+     * 각 게시글 대상으로 스크래핑
      *
      * @param targetPostList 스크래핑 대상 게시글 정보 리스트
      */
-    private void scrapPosts(List<DCPost> targetPostList) {
+    private void scrapPosts(List<DCPostMeta> targetPostList) {
         targetPostList.forEach(post -> {
             String url = DC_DOMAIN + post.getUrl();
             log.debug("target post url: {}", url);
 
-            Document doc = null;
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                doc = Jsoup.connect(url).get();
+                Document doc = Jsoup.connect(url).get();
+                DCContent dcContent = getContent(url, doc);
+                log.info("dcContent : {}", dcContent);
+                // ES에 저장
             } catch (IOException e) {
                 log.error("{}", e.getMessage());
             }
-
-            DCContent dcContent = getContent(url, doc);
-            log.info("dcContent : {}", dcContent);
         });
     }
 
@@ -229,14 +228,14 @@ public class DCScrapper {
      * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    private List<DCPost> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
+    private List<DCPostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
         boolean targetDateFlag = true;
-        List<DCPost> result = new ArrayList<>();
+        List<DCPostMeta> result = new ArrayList<>();
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
 
-            List<DCPost> list = getDcPosts(boardUrl);
+            List<DCPostMeta> list = getDcPosts(boardUrl);
             targetDateFlag = checkTargetDateBeforePost(targetDate, list);
 
             result.addAll(getTargetDatePost(targetDate, list));
@@ -256,7 +255,7 @@ public class DCScrapper {
      * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
      * @return target date 게시글만 남은 리스트
      */
-    private List<DCPost> getTargetDatePost(LocalDate targetDate, List<DCPost> postList) {
+    private List<DCPostMeta> getTargetDatePost(LocalDate targetDate, List<DCPostMeta> postList) {
         return postList.stream()
                 .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
                         .isEqual(targetDate))
@@ -270,7 +269,7 @@ public class DCScrapper {
      * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
      * @return target date 이전 날짜 게시글이 없으면 true, 있으면 false
      */
-    private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<DCPost> postList) {
+    private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<DCPostMeta> postList) {
         long targetDateBeforePostCount = postList.stream()
                 .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
                         .isBefore(targetDate))
@@ -286,7 +285,7 @@ public class DCScrapper {
      * @return 게시글 정보 리스트
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    private List<DCPost> getDcPosts(String boardUrl) throws IOException {
+    private List<DCPostMeta> getDcPosts(String boardUrl) throws IOException {
         log.debug("get Post info from {}", boardUrl);
         Document doc = Jsoup.connect(boardUrl).get();
 
@@ -300,7 +299,7 @@ public class DCScrapper {
 
         return IntStream
                 .range(0, minListSize)
-                .mapToObj(i -> new DCPost(
+                .mapToObj(i -> new DCPostMeta(
                         gallDateList.get(i).attr("title"),
                         gallNumList.get(i).ownText(),
                         gallCountList.get(i).ownText(),

@@ -8,7 +8,7 @@ import lombok.Data;
  * ex) https://gall.dcinside.com/board/lists/?id=neostock&page=1
  */
 @Data
-public class DCPost {
+public class DCPostMeta {
     final String date; // 작성일
     final String num; // 번호
     final String count; // 조회
