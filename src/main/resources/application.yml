@@ -1,3 +1,5 @@
 spring:
   profiles:
     default: "local"
+  main:
+    web-application-type: none # web server start off

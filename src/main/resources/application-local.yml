@@ -14,5 +14,3 @@ logging:
   level:
     org.example.community.crawler: "info"
 
-server.port: 4321
-
