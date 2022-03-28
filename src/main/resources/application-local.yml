@@ -1,6 +1,8 @@
 spring:
   elasticsearch:
     uris: "http://localhost:9200"
+    host: "localhost"
+    port: "9200"
 
 app:
   board_base_url: "https://gall.dcinside.com/board/lists/?id=rlike"
@@ -12,4 +14,5 @@ logging:
   level:
     org.example.community.crawler: "info"
 
+server.port: 4321
 
