@@ -6,9 +6,9 @@ spring:
 
 app:
   board_base_url: "https://gall.dcinside.com/board/lists/?id=rlike"
-  target_date: "2022-03-25"
+  target_date: "2022-03-27"
   web_driver_path: "C:\\Program Files\\chromedriver_win32\\chromedriver.exe"
-  es_index_name: "my-index-1"
+  es_index_name: "dc-content-1"
 
 logging:
   level:

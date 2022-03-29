@@ -19,5 +19,15 @@
       "name": "app.es_index_name",
       "type": "java.lang.String",
       "description": "스크래핑 결과 적재 대상 index명"
+    },
+    {
+      "name": "spring.elasticsearch.port",
+      "type": "java.lang.String",
+      "description": "elasticsearch.port."
+    },
+    {
+      "name": "spring.elasticsearch.host",
+      "type": "java.lang.String",
+      "description": "elasticsearch.host."
     }
   ] }

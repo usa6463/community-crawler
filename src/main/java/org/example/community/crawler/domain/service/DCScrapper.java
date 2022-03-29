@@ -6,6 +6,7 @@ import org.example.community.crawler.domain.entity.DCContent;
 import org.example.community.crawler.domain.entity.DCInnerReply;
 import org.example.community.crawler.domain.entity.DCPostMeta;
 import org.example.community.crawler.domain.entity.DCReply;
+import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -52,10 +53,12 @@ public class DCScrapper {
     private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
 
     private final AppConfiguration appConfiguration;
+    private final ESRepository esRepository;
 
     @Autowired
-    public DCScrapper(AppConfiguration appConfiguration) {
+    public DCScrapper(AppConfiguration appConfiguration, ESRepository esRepository) {
         this.appConfiguration = appConfiguration;
+        this.esRepository = esRepository;
     }
 
     /**
@@ -72,7 +75,7 @@ public class DCScrapper {
 
             scrapPosts(targetPostList);
 
-            // rate limiter 적용해서 요청 쓰로틀링 필요
+            // TODO rate limiter 적용해서 요청 쓰로틀링 필요
         } catch (Exception e) {
             log.error("{}", e.getMessage());
         }
@@ -92,7 +95,9 @@ public class DCScrapper {
                 Document doc = Jsoup.connect(url).get();
                 DCContent dcContent = getContent(url, doc);
                 log.info("dcContent : {}", dcContent);
+
                 // ES에 저장
+                esRepository.save(dcContent);
             } catch (IOException e) {
                 log.error("{}", e.getMessage());
             }

@@ -14,7 +14,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <jackson.version>2.12.3</jackson.version>
-        <elasticsearch.version>7.16.3</elasticsearch.version>
         <springboot.version>2.6.4</springboot.version>
     </properties>
 
@@ -62,46 +61,12 @@
             <optional>true</optional>
         </dependency>
 
-<!--        &lt;!&ndash; elasticsearch-java(4.5.3)와 crawler4j(4.5.10) 디펜던시 충돌로 인해 추가 &ndash;&gt;-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.httpcomponents</groupId>-->
-<!--            <artifactId>httpclient</artifactId>-->
-<!--            <version>4.5.10</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>co.elastic.clients</groupId>-->
-<!--            <artifactId>elasticsearch-java</artifactId>-->
-<!--            <version>${elasticsearch.version}</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/edu.uci.ics/crawler4j &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>edu.uci.ics</groupId>-->
-<!--            <artifactId>crawler4j</artifactId>-->
-<!--            <exclusions>-->
-<!--                <exclusion> &lt;!&ndash; elasticsearch-java(4.5.3)와 crawler4j(4.5.10) 디펜던시 충돌로 인해 추가 &ndash;&gt;-->
-<!--                    <groupId>org.apache.httpcomponents</groupId>-->
-<!--                    <artifactId>httpclient</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--            <version>4.4.0</version>-->
-<!--        </dependency>-->
-
         <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--            <artifactId>jackson-databind</artifactId>-->
-<!--            <version>${jackson.version}</version>-->
-<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
         <dependency>
