@@ -13,8 +13,10 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @NoArgsConstructor
-@Document(indexName = "dc-content-1")
+@Document(indexName = "dc-content-1") // TODO 설정파일 통해서 변경 가능하도록 하기
 public class DCContent extends Content {
+    @Id
+    private int contentNum;
     private String nickname;
     private String ip;
     private String dt;
@@ -22,6 +24,4 @@ public class DCContent extends Content {
     private String recommendCount;
     private String commentCount;
     private ArrayList<DCReply> replyList;
-    @Id
-    private int contentNum;
 }
