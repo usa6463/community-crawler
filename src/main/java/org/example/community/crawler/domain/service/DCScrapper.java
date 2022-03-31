@@ -17,13 +17,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -126,8 +127,8 @@ public class DCScrapper {
         String recommendCount = fr.select(".gall_reply_num").html();
         String commentCount = fr.select(".gall_comment").html();
 
-        return DCContent.builder()
-                .title(title)
+        DCContent dcContent = DCContent.builder()
+                .title(null)
                 .url(url)
                 .content(content)
                 .nickname(nickname)
@@ -139,6 +140,13 @@ public class DCScrapper {
                 .contentNum(contentNum)
                 .replyList(getReplyList(url))
                 .build();
+
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Set<ConstraintViolation<DCContent>> violations = validator.validate(dcContent);
+        violations.stream().forEach(x-> log.error(x.getMessage()));
+
+        return dcContent;
     }
 
     /**

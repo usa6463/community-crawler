@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 
 @Data
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class DCContent {
     @Id
     private int contentNum;
+    @NotNull
     private String title;
     private String content;
     private String url;
