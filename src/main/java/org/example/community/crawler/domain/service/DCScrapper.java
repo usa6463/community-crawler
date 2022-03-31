@@ -112,8 +112,6 @@ public class DCScrapper {
      * @return DCContent 데이터 객체 반환
      */
     private DCContent getContent(String url, Document doc) {
-        DCContent result = new DCContent();
-
         String content = doc.select(".write_div").html();
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -128,19 +126,19 @@ public class DCScrapper {
         String recommendCount = fr.select(".gall_reply_num").html();
         String commentCount = fr.select(".gall_comment").html();
 
-        result.setTitle(title);
-        result.setUrl(url);
-        result.setContent(content);
-        result.setNickname(nickname);
-        result.setIp(ip);
-        result.setDt(date);
-        result.setViewCount(viewCount);
-        result.setRecommendCount(recommendCount);
-        result.setCommentCount(commentCount);
-        result.setContentNum(contentNum);
-
-        result.setReplyList(getReplyList(url));
-        return result;
+        return DCContent.builder()
+                .title(title)
+                .url(url)
+                .content(content)
+                .nickname(nickname)
+                .ip(ip)
+                .dt(date)
+                .viewCount(viewCount)
+                .recommendCount(recommendCount)
+                .commentCount(commentCount)
+                .contentNum(contentNum)
+                .replyList(getReplyList(url))
+                .build();
     }
 
     /**
