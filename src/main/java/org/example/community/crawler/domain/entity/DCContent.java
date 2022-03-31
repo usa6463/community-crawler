@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @NoArgsConstructor
-@Document(indexName = "dc-content-1") // TODO 설정파일 통해서 변경 가능하도록 하기
+@Document(indexName = "#{@appConfiguration.getEsIndexName()}")
 public class DCContent extends Content {
     @Id
     private int contentNum;

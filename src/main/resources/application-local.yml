@@ -7,10 +7,9 @@ spring:
 app:
   board_base_url: "https://gall.dcinside.com/board/lists/?id=rlike"
   target_date: "2022-03-27"
-  web_driver_path: "C:\\Program Files\\chromedriver_win32\\chromedriver.exe"
+  web_driver_path: "C:\\Program Files\\chrome_driver_100\\chromedriver.exe"
   es_index_name: "dc-content-loglike"
 
 logging:
   level:
     org.example.community.crawler: "info"
-
