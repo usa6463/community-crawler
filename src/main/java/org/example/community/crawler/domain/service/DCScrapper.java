@@ -246,7 +246,8 @@ public class DCScrapper {
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
 
-            List<DCPostMeta> list = getDcPosts(boardUrl);
+            log.debug("get Post info from {}", boardUrl);
+            List<DCPostMeta> list = getDcPosts(Jsoup.connect(boardUrl).get());
             targetDateFlag = checkTargetDateBeforePost(targetDate, list);
 
             result.addAll(getTargetDatePost(targetDate, list));
@@ -292,13 +293,11 @@ public class DCScrapper {
     /**
      * DC 게시판을 파싱하여 게시글 정보 수집
      *
-     * @param boardUrl 스크래핑할 페이지 URL
+     * @param doc 스크래핑할 페이지 Doc
      * @return 게시글 정보 리스트
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    private List<DCPostMeta> getDcPosts(String boardUrl) throws IOException {
-        log.debug("get Post info from {}", boardUrl);
-        Document doc = Jsoup.connect(boardUrl).get();
+    public List<DCPostMeta> getDcPosts(Document doc) throws IOException {
 
         Elements gallDateList = doc.select(".gall_date");
         Elements gallNumList = doc.select(".gall_num");
