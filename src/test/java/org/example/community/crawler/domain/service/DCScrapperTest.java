@@ -6,10 +6,16 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = "command.line.runner.enabled=false")
@@ -17,24 +23,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DCScrapperTest {
 
     @Test
-    void getContentTest(@Autowired DCScrapper dcScrapper) throws IOException {
+    void getContentTest(@Autowired DCScrapper dcScrapper, @Autowired ResourceLoader resourceLoader) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:dc-content-sample.html");
+        Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
+        String postSampleHtml = FileCopyUtils.copyToString(reader);
+        System.out.println(postSampleHtml);
 
-        String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406565&page=1";
-        Document doc = Jsoup.connect(url).get();
+//        Document doc = Jsoup.parse(htmlSample);
+//        System.out.println(doc.html());
 //        DCContent result = dcScrapper.getContent(url, doc);
-
-        DCContent answer = DCContent.builder()
-                .content("abc")
-                .build();
-
-        assertEquals("abc", "abc");
-
+//
+//        DCContent answer = DCContent.builder()
+//                .content("abc")
+//                .build();
+//
 //        assertEquals(result, answer);
-    }
-
-    @Test
-    void test() {
-        assertEquals("abc", "abc");
     }
 
 }
