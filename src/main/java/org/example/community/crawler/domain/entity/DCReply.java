@@ -1,9 +1,6 @@
 package org.example.community.crawler.domain.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 
@@ -11,6 +8,7 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DCReply {
     private String id;
     private String nickname;
