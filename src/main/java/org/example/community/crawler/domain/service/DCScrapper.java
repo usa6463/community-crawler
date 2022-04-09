@@ -17,13 +17,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -111,9 +112,7 @@ public class DCScrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
-    private DCContent getContent(String url, Document doc) {
-        DCContent result = new DCContent();
-
+    public DCContent getContent(String url, Document doc) {
         String content = doc.select(".write_div").html();
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -128,19 +127,26 @@ public class DCScrapper {
         String recommendCount = fr.select(".gall_reply_num").html();
         String commentCount = fr.select(".gall_comment").html();
 
-        result.setTitle(title);
-        result.setUrl(url);
-        result.setContent(content);
-        result.setNickname(nickname);
-        result.setIp(ip);
-        result.setDt(date);
-        result.setViewCount(viewCount);
-        result.setRecommendCount(recommendCount);
-        result.setCommentCount(commentCount);
-        result.setContentNum(contentNum);
+        DCContent dcContent = DCContent.builder()
+                .title(title)
+                .url(url)
+                .content(content)
+                .nickname(nickname)
+                .ip(ip)
+                .dt(date)
+                .viewCount(viewCount)
+                .recommendCount(recommendCount)
+                .commentCount(commentCount)
+                .contentNum(contentNum)
+                .replyList(getReplyList(url))
+                .build();
 
-        result.setReplyList(getReplyList(url));
-        return result;
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Set<ConstraintViolation<DCContent>> violations = validator.validate(dcContent);
+        violations.stream().forEach(x-> log.error(x.getMessage()));
+
+        return dcContent;
     }
 
     /**
@@ -240,7 +246,8 @@ public class DCScrapper {
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
 
-            List<DCPostMeta> list = getDcPosts(boardUrl);
+            log.debug("get Post info from {}", boardUrl);
+            List<DCPostMeta> list = getDcPosts(Jsoup.connect(boardUrl).get());
             targetDateFlag = checkTargetDateBeforePost(targetDate, list);
 
             result.addAll(getTargetDatePost(targetDate, list));
@@ -286,13 +293,11 @@ public class DCScrapper {
     /**
      * DC 게시판을 파싱하여 게시글 정보 수집
      *
-     * @param boardUrl 스크래핑할 페이지 URL
+     * @param doc 스크래핑할 페이지 Doc
      * @return 게시글 정보 리스트
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    private List<DCPostMeta> getDcPosts(String boardUrl) throws IOException {
-        log.debug("get Post info from {}", boardUrl);
-        Document doc = Jsoup.connect(boardUrl).get();
+    public List<DCPostMeta> getDcPosts(Document doc) throws IOException {
 
         Elements gallDateList = doc.select(".gall_date");
         Elements gallNumList = doc.select(".gall_num");

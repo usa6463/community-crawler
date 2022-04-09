@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.domain.service.DCScrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@Profile("!test")
 public class ScrappingRunner implements CommandLineRunner {
 
     private final DCScrapper dcScrapper;
@@ -21,7 +23,5 @@ public class ScrappingRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         dcScrapper.scrap();
-
-
     }
 }
