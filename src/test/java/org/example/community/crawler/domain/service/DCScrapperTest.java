@@ -35,7 +35,7 @@ class DCScrapperTest {
 
         Document doc = Jsoup.parse(postSampleHtml);
         String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1";
-        DCContent result = dcScrapper.getContent(url, doc);
+        DCContent actual = dcScrapper.getContent(url, doc);
 
         DCContent expected = DCContent.builder()
                 .contentNum(406576)
@@ -71,8 +71,7 @@ class DCScrapperTest {
                 )
                 .build();
 
-        assertThat(result).isEqualToComparingFieldByField(expected);
-//        assertSame(result, expected);
+        assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
 
     }
 
