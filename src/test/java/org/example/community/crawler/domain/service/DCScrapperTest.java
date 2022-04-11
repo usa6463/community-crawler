@@ -71,8 +71,8 @@ class DCScrapperTest {
                 )
                 .build();
 
-        assertThat(actual).isEqualToComparingFieldByFieldRecursively(expected);
-
+        assertThat(actual).usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 
 }
