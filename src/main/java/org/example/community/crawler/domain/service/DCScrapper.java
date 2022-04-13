@@ -23,6 +23,9 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,7 +123,7 @@ public class DCScrapper {
         Elements fl = doc.select(".fl");
         String nickname = fl.select(".nickname").html();
         String ip = fl.select(".ip").html();
-        String date = fl.select(".gall_date").html();
+        String date = getZonedDatetime(fl.select(".gall_date").html());
 
         Elements fr = doc.select(".fr");
         String viewCount = fr.select(".gall_count").html();
@@ -147,6 +150,13 @@ public class DCScrapper {
         violations.stream().forEach(x-> log.error(x.getMessage()));
 
         return dcContent;
+    }
+
+    private String getZonedDatetime(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.parse(date, formatter), ZoneId.of("Asia/Seoul"));
+        return zonedDateTime.withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
+//        return date;
     }
 
     /**

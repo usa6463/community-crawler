@@ -51,7 +51,7 @@ class DCScrapperTest {
                 .url("https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1")
                 .nickname("<em>ㅇㅇ</em>")
                 .ip("(121.136)")
-                .dt("2022.04.09 19:05:06")
+                .dt("2022.04.09 10:05:06")
                 .viewCount("조회 61")
                 .recommendCount("추천 0")
                 .commentCount("<a href=\"#focus_cmt\">댓글 6</a>")
