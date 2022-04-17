@@ -50,7 +50,7 @@ class DCScrapperTest {
                         "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\"><br></span></p>")
                 .url("https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1")
                 .nickname("ㅇㅇ")
-                .ip("(121.136)")
+                .ip("121.136")
                 .dt("2022.04.09 19:05:06")
                 .viewCount("조회 61")
                 .recommendCount("추천 0")

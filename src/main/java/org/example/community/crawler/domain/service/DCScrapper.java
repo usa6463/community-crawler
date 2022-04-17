@@ -122,8 +122,10 @@ public class DCScrapper {
 
         Elements fl = doc.select(".fl");
         String nickname = removeTag(fl.select(".nickname").html());
-        String ip = fl.select(".ip").html();
-        String date = getZonedDatetime(fl.select(".gall_date").html(), "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
+        String ip = fl.select(".ip").html()
+                .replaceAll("[\\(,\\)]","");
+        String date = getZonedDatetime(fl.select(".gall_date").html(),
+                "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
 
         Elements fr = doc.select(".fr");
         String viewCount = fr.select(".gall_count").html();
