@@ -134,7 +134,8 @@ public class DCScrapper {
                 .html()
                 .replaceAll("조회 ", "");
         String recommendCount = fr.select(".gall_reply_num")
-                .html();
+                .html()
+                .replaceAll("추천 ", "");
         String commentCount = fr.select(".gall_comment").html();
 
         DCContent dcContent = DCContent.builder()
