@@ -122,9 +122,8 @@ public class DCScrapper {
 
         Elements fl = doc.select(".fl");
         String nickname = removeTag(fl.select(".nickname").html());
-        String ip = fl.select(".ip")
-                .html()
-                .replaceAll("[\\(,\\)]", "");
+        String ip = removeParenthesis(fl.select(".ip")
+                .html());
         String date = getZonedDatetime(fl.select(".gall_date")
                         .html(),
                 "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
@@ -160,6 +159,10 @@ public class DCScrapper {
         violations.forEach(x -> log.error(x.getMessage()));
 
         return dcContent;
+    }
+
+    private String removeParenthesis(String src) {
+        return src.replaceAll("[\\(,\\)]", "");
     }
 
     private String removeTag(String html) {
@@ -233,7 +236,9 @@ public class DCScrapper {
         result.setId(replyId);
 
         result.setNickname(element.select("em[title]").html());
-        result.setIp(element.select(".ip").html());
+        result.setIp(
+                removeParenthesis(element.select(".ip")
+                        .html()));
         result.setContent(element.select("p[class^=usertxt]").html());
         result.setDate(element.select("span[class^=date_time]").html());
         result.setInnerReplyList(getInnerReply(replyId, commentBox));
