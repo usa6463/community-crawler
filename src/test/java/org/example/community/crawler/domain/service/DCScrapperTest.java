@@ -49,7 +49,7 @@ class DCScrapperTest {
                 .dt("2022.04.09 19:05:06")
                 .viewCount("61")
                 .recommendCount("0")
-                .commentCount("<a href=\"#focus_cmt\">댓글 6</a>")
+                .commentCount("6")
                 .replyList(new ArrayList<>(
                                 Arrays.asList(
                                         new DCReply("1409573", "ㅇㅇ", "(39.125)", "04.09 19:07:20", "유령계열 몹들이 지키고 있기?<br>저거에 뒈진 놈들이라는 설정", new ArrayList<DCInnerReply>(
