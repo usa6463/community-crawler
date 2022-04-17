@@ -40,14 +40,9 @@ class DCScrapperTest {
         DCContent expected = DCContent.builder()
                 .contentNum(406576)
                 .title("ㄷㅈ) 픽다트 지형 만드는데 아이디어 좀")
-                .content("<p><br></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\">+7 long sword of draining인 Throatcutter, 상대방 체력이 낮을 때 즉사 확률 있는 장검 픽다트</span><br></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\"><br></span></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\"><br></span></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\">지형을 만들려고 하는데 아이디어 뭐 없나</span></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\"><br></span></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\">3~8층에 꽂는데다가 초반용 픽다트라 어렵게 할 필요는 없는데 테마가 생각이 안나네</span></p> \n" +
-                        "<p><span style=\"color:rgb(55,58,60);font-family:'Malgun Gothic', '맑은 고딕', AppleGothic, sans-serif;font-size:10pt;background-color:rgb(255,255,255);\"><br></span></p>")
+                .content("+7 long sword of draining인 Throatcutter, 상대방 체력이 낮을 때 즉사 확률 있는 장검 픽다트 " +
+                        "지형을 만들려고 하는데 아이디어 뭐 없나 " +
+                        "3~8층에 꽂는데다가 초반용 픽다트라 어렵게 할 필요는 없는데 테마가 생각이 안나네")
                 .url("https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1")
                 .nickname("ㅇㅇ")
                 .ip("121.136")

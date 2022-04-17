@@ -116,7 +116,7 @@ public class DCScrapper {
      * @return DCContent 데이터 객체 반환
      */
     public DCContent getContent(String url, Document doc) {
-        String content = doc.select(".write_div").html();
+        String content = removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
 
