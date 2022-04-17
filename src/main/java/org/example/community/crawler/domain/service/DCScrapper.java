@@ -122,14 +122,19 @@ public class DCScrapper {
 
         Elements fl = doc.select(".fl");
         String nickname = removeTag(fl.select(".nickname").html());
-        String ip = fl.select(".ip").html()
-                .replaceAll("[\\(,\\)]","");
-        String date = getZonedDatetime(fl.select(".gall_date").html(),
+        String ip = fl.select(".ip")
+                .html()
+                .replaceAll("[\\(,\\)]", "");
+        String date = getZonedDatetime(fl.select(".gall_date")
+                        .html(),
                 "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
 
         Elements fr = doc.select(".fr");
-        String viewCount = fr.select(".gall_count").html();
-        String recommendCount = fr.select(".gall_reply_num").html();
+        String viewCount = fr.select(".gall_count")
+                .html()
+                .replaceAll("조회 ", "");
+        String recommendCount = fr.select(".gall_reply_num")
+                .html();
         String commentCount = fr.select(".gall_comment").html();
 
         DCContent dcContent = DCContent.builder()
@@ -149,7 +154,7 @@ public class DCScrapper {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<DCContent>> violations = validator.validate(dcContent);
-        violations.forEach(x-> log.error(x.getMessage()));
+        violations.forEach(x -> log.error(x.getMessage()));
 
         return dcContent;
     }
@@ -161,10 +166,11 @@ public class DCScrapper {
     /**
      * dateTime 문자열을 파싱하고 특정 zone의 시간대로 변경한 뒤 다시 문자열로 반환.
      * 예를들어 fromZone이 "Asia/Seoul" 이고 toZone이 "UTC" 라면 9시간을 뺀 datetime 문자열을 반환한다.
+     *
      * @param dateTime 대상 dateTime 문자열
      * @param fromZone 대상 dateTime 문자열의 time zone
-     * @param toZone 변경하고자 하는 time zone
-     * @param pattern 문자열 dateTime의 패턴
+     * @param toZone   변경하고자 하는 time zone
+     * @param pattern  문자열 dateTime의 패턴
      * @return dateTime 특정 zone의 시간대로 변경한 뒤의 문자열
      */
     private String getZonedDatetime(String dateTime, String fromZone, String toZone, String pattern) {

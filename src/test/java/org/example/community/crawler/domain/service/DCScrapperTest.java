@@ -47,7 +47,7 @@ class DCScrapperTest {
                 .nickname("ㅇㅇ")
                 .ip("121.136")
                 .dt("2022.04.09 19:05:06")
-                .viewCount("조회 61")
+                .viewCount("61")
                 .recommendCount("추천 0")
                 .commentCount("<a href=\"#focus_cmt\">댓글 6</a>")
                 .replyList(new ArrayList<>(
