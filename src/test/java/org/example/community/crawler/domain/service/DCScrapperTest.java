@@ -53,10 +53,10 @@ class DCScrapperTest {
                 .replyList(new ArrayList<>(
                                 Arrays.asList(
                                         new DCReply("1409573", "ㅇㅇ", "39.125", "04.09 19:07:20", "유령계열 몹들이 지키고 있기? 저거에 뒈진 놈들이라는 설정", new ArrayList<DCInnerReply>(
-                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "(121.136)", "04.09 19:08:55", "흠 그건 모르그 단검 쪽에 더 어울릴 거 같기도하고. 이제보니까 모르그 단검이 지형이 없네"))
+                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "121.136", "04.09 19:08:55", "흠 그건 모르그 단검 쪽에 더 어울릴 거 같기도하고. 이제보니까 모르그 단검이 지형이 없네"))
                                         )),
                                         new DCReply("1409577", "", "", "04.09 19:18:44", "그걸 들고 있는 몹과 딸피 몹들이 갇혀있는 처형장 컨셉?", new ArrayList<>(
-                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "(39.125)", "04.09 19:32:45", "이야 이거 좋다 ㅋㅋㅋㅋㅋ"))
+                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "39.125", "04.09 19:32:45", "이야 이거 좋다 ㅋㅋㅋㅋㅋ"))
                                         )),
                                         new DCReply("1409580", "", "", "04.09 19:24:12", "뼉다구 시체타일 늘어놓고 키쿠제단 박기ㅋㅋㅋ", new ArrayList<>()),
                                         new DCReply("0", "", "", "", "", new ArrayList<>()),
