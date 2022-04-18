@@ -239,7 +239,7 @@ public class DCScrapper {
         result.setIp(
                 removeParenthesis(element.select(".ip")
                         .html()));
-        result.setContent(element.select("p[class^=usertxt]").html());
+        result.setContent(removeTag(element.select("p[class^=usertxt]").html()));
         result.setDate(element.select("span[class^=date_time]").html());
         result.setInnerReplyList(getInnerReply(replyId, commentBox));
         return result;
@@ -261,7 +261,7 @@ public class DCScrapper {
                     DCInnerReply innerReply = new DCInnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
                     innerReply.setIp(element.select(".ip").html());
-                    innerReply.setContent(element.select("p[class^=usertxt]").html());
+                    innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
                     innerReply.setDate(element.select("span[class^=date_time]").html());
                     result.add(innerReply);
                 }
