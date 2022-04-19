@@ -235,7 +235,7 @@ public class DCScrapper {
         DCReply result = new DCReply();
         result.setId(replyId);
 
-        result.setNickname(element.select("em[title]").html());
+        result.setNickname(element.select("em").html());
         result.setIp(
                 removeParenthesis(element.select(".ip")
                         .html()));
