@@ -214,12 +214,14 @@ public class DCScrapper {
         }
 
         replyList = commentBox.select("li[id^=comment_li_]");
-        replyList.forEach(
-                element -> {
-                    DCReply reply = parseCommentLi(element, commentBox);
-                    result.add(reply);
-                }
-        );
+        replyList.stream()
+                .filter(element -> !element.attr("id").split("_")[2].equals("0"))
+                .forEach(
+                        element -> {
+                            DCReply reply = parseCommentLi(element, commentBox);
+                            result.add(reply);
+                        }
+                );
         return result;
     }
 

@@ -59,7 +59,6 @@ class DCScrapperTest {
                                                 Arrays.asList(new DCInnerReply("ㅇㅇ", "39.125", "04.09 19:32:45", "이야 이거 좋다 ㅋㅋㅋㅋㅋ"))
                                         )),
                                         new DCReply("1409580", "ㅇㅇ", "", "04.09 19:24:12", "뼉다구 시체타일 늘어놓고 키쿠제단 박기ㅋㅋㅋ", new ArrayList<>()),
-                                        new DCReply("0", "", "", "", "", new ArrayList<>()),
                                         new DCReply("1409581", "ㅇㅇ", "49.163", "04.09 19:24:35", "픽다트 앞에 인간형 시체 한구 놓아두고 주변에 딸피+드레인 걸린 OOD랑 시체들 널부러진건 어떰?", new ArrayList<>())
                                 )
                         )
