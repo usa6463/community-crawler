@@ -102,7 +102,8 @@ public class DCScrapper {
 
                 // ES에 저장
                 esRepository.save(dcContent);
-            } catch (IOException e) {
+                Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
+            } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
             }
         });
