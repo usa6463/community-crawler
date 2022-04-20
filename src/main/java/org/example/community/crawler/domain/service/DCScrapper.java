@@ -165,6 +165,13 @@ public class DCScrapper {
         return src.replaceAll("[\\(,\\)]", "");
     }
 
+    private String convertEmptyStringToNull(String input) {
+        if (input.equals("")) {
+            return null;
+        }
+        return input;
+    }
+
     private String removeTag(String html) {
         return Jsoup.parse(html).text();
     }
@@ -215,7 +222,7 @@ public class DCScrapper {
 
         replyList = commentBox.select("li[id^=comment_li_]");
         replyList.stream()
-                .filter(element -> !element.attr("id").split("_")[2].equals("0"))
+                .filter(element -> !element.attr("id").split("_")[2].equals("0")) //댓글돌이 제거
                 .forEach(
                         element -> {
                             DCReply reply = parseCommentLi(element, commentBox);
@@ -239,8 +246,8 @@ public class DCScrapper {
 
         result.setNickname(element.select("em").html());
         result.setIp(
-                removeParenthesis(element.select(".ip")
-                        .html()));
+                convertEmptyStringToNull(removeParenthesis(element.select(".ip")
+                        .html())));
         result.setContent(removeTag(element.select("p[class^=usertxt]").html()));
         result.setDate(element.select("span[class^=date_time]").html());
         result.setInnerReplyList(getInnerReply(replyId, commentBox));
@@ -262,7 +269,7 @@ public class DCScrapper {
                 element -> {
                     DCInnerReply innerReply = new DCInnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
-                    innerReply.setIp(removeParenthesis(element.select(".ip").html()));
+                    innerReply.setIp(convertEmptyStringToNull(removeParenthesis(element.select(".ip").html())));
                     innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
                     innerReply.setDate(element.select("span[class^=date_time]").html());
                     result.add(innerReply);
