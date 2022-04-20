@@ -58,11 +58,23 @@ public class DCScrapper {
 
     private final AppConfiguration appConfiguration;
     private final ESRepository esRepository;
+    private WebDriver driver;
 
     @Autowired
     public DCScrapper(AppConfiguration appConfiguration, ESRepository esRepository) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
+
+        System.setProperty(WEB_DRIVER_ID, appConfiguration.getWebDriverPath());
+        System.setProperty("webdriver.chrome.whitelistedIps", "");
+
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+
+        driver = new ChromeDriver(chromeOptions);
     }
 
     /**
@@ -201,19 +213,10 @@ public class DCScrapper {
      */
     private ArrayList<DCReply> getReplyList(String url) {
         ArrayList<DCReply> result = new ArrayList<>();
-        System.setProperty(WEB_DRIVER_ID, appConfiguration.getWebDriverPath());
-        System.setProperty("webdriver.chrome.whitelistedIps", "");
 
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless");
-        chromeOptions.addArguments("--no-sandbox");
-        chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--disable-dev-shm-usage");
-
-        WebDriver driver = new ChromeDriver(chromeOptions);
         driver.get(url);
         Document doc = Jsoup.parse(driver.getPageSource());
-        driver.close();
+//        driver.close();
 
         Elements commentBox = doc.select(".comment_box");
         Elements replyList;
