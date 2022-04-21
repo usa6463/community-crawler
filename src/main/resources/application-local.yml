@@ -1,6 +1,5 @@
 spring:
   elasticsearch:
-    uris: "http://localhost:9200"
     host: "localhost"
     port: "9200"
 
