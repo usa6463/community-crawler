@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### chromdriver ###
-chromedriver_linux64
+deploy/google-chrome-stable/chromedriver_linux64
