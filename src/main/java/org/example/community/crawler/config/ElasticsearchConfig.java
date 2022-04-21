@@ -1,5 +1,6 @@
 package org.example.community.crawler.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 
 @Configuration
+@Slf4j
 public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
     @Value("${spring.elasticsearch.host}")
     private String host;
@@ -19,6 +21,7 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
     @Bean
     public RestHighLevelClient elasticsearchClient() {
         String uri = String.format("%s:%s", host, port);
+        log.info("elasticsearch uri : {}", uri);
 
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()
                 .connectedTo(uri)

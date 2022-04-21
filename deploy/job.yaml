@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: community-crawler
-          image: usa6463/community-crawler:1.0.0
+          image: usa6463/community-crawler:2.0.0
 #          command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
       restartPolicy: Never
   backoffLimit: 4
