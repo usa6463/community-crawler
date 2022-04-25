@@ -1,8 +1,10 @@
 package org.example.community.crawler.domain.service;
 
+import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.DCContent;
 import org.example.community.crawler.domain.entity.DCInnerReply;
 import org.example.community.crawler.domain.entity.DCReply;
+import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
@@ -21,20 +23,20 @@ import java.util.Arrays;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = "command.line.runner.enabled=false")
 @ActiveProfiles("test")
 class DCScrapperTest {
 
     @Test
-    void getContentTest(@Autowired DCScrapper dcScrapper, @Autowired ResourceLoader resourceLoader) throws IOException {
+    void getContentTest(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:dc-content-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String postSampleHtml = FileCopyUtils.copyToString(reader);
 
         Document doc = Jsoup.parse(postSampleHtml);
         String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1";
+        DCScrapper dcScrapper = new DCScrapper(appConfiguration, esRepository);
         DCContent actual = dcScrapper.getContent(url, doc);
 
         DCContent expected = DCContent.builder()

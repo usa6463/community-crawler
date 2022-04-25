@@ -14,8 +14,6 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,9 +29,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Service
 @Slf4j
-public class DCScrapper {
+public class DCScrapper implements Scrapper {
 
     /**
      * DC 게시판에서 확인할 수 있는 게시글 등록일자 포맷
@@ -60,7 +57,6 @@ public class DCScrapper {
     private final ESRepository esRepository;
     private WebDriver driver;
 
-    @Autowired
     public DCScrapper(AppConfiguration appConfiguration, ESRepository esRepository) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
@@ -80,6 +76,7 @@ public class DCScrapper {
     /**
      * DC 인사이드 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
      */
+    @Override
     public void scrap() {
         log.info("DCScrapper start");
 
