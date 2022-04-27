@@ -55,22 +55,13 @@ public class DCScrapper implements Scrapper {
 
     private final AppConfiguration appConfiguration;
     private final ESRepository esRepository;
-    private WebDriver driver;
+    private final WebDriver driver;
 
     public DCScrapper(AppConfiguration appConfiguration, ESRepository esRepository) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
 
-        System.setProperty(WEB_DRIVER_ID, appConfiguration.getWebDriverPath());
-        System.setProperty("webdriver.chrome.whitelistedIps", "");
-
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless");
-        chromeOptions.addArguments("--no-sandbox");
-        chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--disable-dev-shm-usage");
-
-        driver = new ChromeDriver(chromeOptions);
+        driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
     }
 
     /**
