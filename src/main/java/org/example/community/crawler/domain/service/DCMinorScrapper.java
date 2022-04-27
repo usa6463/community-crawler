@@ -67,7 +67,7 @@ public class DCMinorScrapper implements Scrapper {
      */
     @Override
     public void scrap() {
-        log.info("DCScrapper start");
+        log.info("DCMinorScrapper start");
 
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
