@@ -1,7 +1,10 @@
 package org.example.community.crawler.domain.service;
 
 import org.example.community.crawler.config.AppConfiguration;
+import org.example.community.crawler.domain.entity.DCContent;
+import org.example.community.crawler.domain.entity.DCInnerReply;
 import org.example.community.crawler.domain.entity.DCPostMeta;
+import org.example.community.crawler.domain.entity.DCReply;
 import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,7 +32,7 @@ class DCMinorScrapperTest {
 
     @Test
     void getDcPosts(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
-        Resource resource = resourceLoader.getResource("classpath:dc-minor-content-sample.html");
+        Resource resource = resourceLoader.getResource("classpath:dc-minor-board-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String boardSampleHtml = FileCopyUtils.copyToString(reader);
 
@@ -91,6 +94,48 @@ class DCMinorScrapperTest {
                         new DCPostMeta("2022-04-25 22:52:02", "279034", "99", "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279034&page=8"),
                         new DCPostMeta("2022-04-25 22:50:45", "279033", "178", "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279033&page=8"))
         );
+
+        assertThat(actual).usingRecursiveComparison()
+                .isEqualTo(expected);
+
+    }
+
+    @Test
+    void getContent(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:dc-minor-content-sample.html");
+        Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
+        String boardSampleHtml = FileCopyUtils.copyToString(reader);
+
+        Document doc = Jsoup.parse(boardSampleHtml);
+        String url = "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279772&page=2";
+
+        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper(appConfiguration, esRepository);
+        DCContent actual = dcMinorScrapper.getContent(url, doc);
+
+        DCContent expected = DCContent.builder()
+                .contentNum(279772)
+                .title("와이드랑 테이퍼드 사이즈 똑같이 사도 댐??")
+                .content("테이퍼드 27입는데 와이드도 똑같이 가면 되나... - dc official App")
+                .url("https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279772&page=2")
+                .nickname("ㅇㅇ")
+                .ip("61.102")
+                .dt("2022.04.29 14:55:35")
+                .viewCount("66")
+                .recommendCount("0")
+                .commentCount("5")
+                .replyList(new ArrayList<>(
+                                Arrays.asList(
+                                        new DCReply("904436", "ㅇㅇ", null, "04.29 14:57:34", "허벅지랑 허리사이즈를 비교해", new ArrayList<DCInnerReply>()),
+                                        new DCReply("904444", "ㅇㅇ", "121.177", "04.29 14:59:07", "니가 입는 바지랑 실측표를 보면 감이 오지 않을까", new ArrayList<>(
+                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "61.102", "04.29 16:28:19", "ㅇㅋㅇㅋ - dc App"))
+                                        )),
+                                        new DCReply("904463", "ㅇㅇ", "1.216", "04.29 15:37:27", "실측표 비교", new ArrayList<>(
+                                                Arrays.asList(new DCInnerReply("ㅇㅇ", "61.102", "04.29 16:28:21", "ㅇㅋㅇㅋ - dc App"))
+                                        ))
+                                )
+                        )
+                )
+                .build();
 
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
