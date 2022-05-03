@@ -4,10 +4,10 @@ spring:
     port: "9200"
 
 app:
-  board_base_url: "https://gall.dcinside.com/board/lists/?id=rlike"
-  target_date: "2022-03-27"
+  board_base_url: "https://gall.dcinside.com/mgallery/board/lists?id=mf"
+  target_date: "2022-04-30"
   web_driver_path: "C:\\Program Files\\chrome_driver_100\\chromedriver.exe"
-  es_index_name: "dc-content-loglike"
+  es_index_name: "dc-content-mgallery-man-fashion"
 
 logging:
   level:
