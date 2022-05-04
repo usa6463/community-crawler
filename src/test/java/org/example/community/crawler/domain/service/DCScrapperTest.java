@@ -8,6 +8,7 @@ import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
@@ -36,8 +37,10 @@ class DCScrapperTest {
 
         Document doc = Jsoup.parse(postSampleHtml);
         String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1";
-        DCScrapper dcScrapper = new DCScrapper(appConfiguration, esRepository);
-        DCContent actual = dcScrapper.getContent(url, doc);
+        DCScrapper dcScrapper = new DCScrapper();
+        final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+        WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
+        DCContent actual = dcScrapper.getContent(url, doc, driver);
 
         DCContent expected = DCContent.builder()
                 .contentNum(406576)

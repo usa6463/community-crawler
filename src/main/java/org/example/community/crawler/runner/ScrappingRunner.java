@@ -28,9 +28,9 @@ public class ScrappingRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Scrapper scrapper = null;
         String baseUrl = appConfiguration.getBoardBaseUrl();
-        scrapper = ScrapperFactory.getScrapper(baseUrl, appConfiguration, esRepository);
+        scrapper = ScrapperFactory.getScrapper(baseUrl);
 
-        scrapper.scrap();
+        scrapper.scrap(appConfiguration, esRepository);
     }
 
 }

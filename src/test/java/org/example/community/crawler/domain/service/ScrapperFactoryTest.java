@@ -15,7 +15,7 @@ class ScrapperFactoryTest {
 
     @Test
     void baseUrlDCMinorTest(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository) {
-        Scrapper scrapper = ScrapperFactory.getScrapper("https://gall.dcinside.com/mgallery/board/lists?id=mf", appConfiguration, esRepository);
+        Scrapper scrapper = ScrapperFactory.getScrapper("https://gall.dcinside.com/mgallery/board/lists?id=mf");
 
         Assertions.assertTrue(scrapper instanceof DCMinorScrapper);
     }

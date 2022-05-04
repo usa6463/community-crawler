@@ -9,6 +9,7 @@ import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
@@ -38,7 +39,7 @@ class DCMinorScrapperTest {
 
         Document doc = Jsoup.parse(boardSampleHtml);
 
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper(appConfiguration, esRepository);
+        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper();
         List<DCPostMeta> actual = dcMinorScrapper.getDcPosts(doc);
 
         List<DCPostMeta> expected = new ArrayList<DCPostMeta>(
@@ -109,8 +110,10 @@ class DCMinorScrapperTest {
         Document doc = Jsoup.parse(boardSampleHtml);
         String url = "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279772&page=2";
 
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper(appConfiguration, esRepository);
-        DCContent actual = dcMinorScrapper.getContent(url, doc);
+        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper();
+        final String WEB_DRIVER_ID = "webdriver.chrome.driver";
+        WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
+        DCContent actual = dcMinorScrapper.getContent(url, doc, driver);
 
         DCContent expected = DCContent.builder()
                 .contentNum(279772)

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class DCMinorScrapper implements Scrapper {
+public class DCMinorScrapper extends Scrapper {
 
     /**
      * DC 게시판에서 확인할 수 있는 게시글 등록일자 포맷
@@ -46,56 +46,20 @@ public class DCMinorScrapper implements Scrapper {
      * 게시글 url에서 게시글 번호를 추출하기 위한 regex pattern
      */
     public static final String PATTERN_FOR_CONTENT_NUM = "\\S+no=(\\d+).*";
-    /**
-     * selenium에서 사용할 웹 드라이버 아이디
-     */
-    private final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-
-    private final AppConfiguration appConfiguration;
-    private final ESRepository esRepository;
-    private final WebDriver driver;
-
-    public DCMinorScrapper(AppConfiguration appConfiguration, ESRepository esRepository) {
-        this.appConfiguration = appConfiguration;
-        this.esRepository = esRepository;
-
-        driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
-    }
-
-    /**
-     * DC 인사이드 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
-     */
-    @Override
-    public void scrap() {
-        log.info("DCMinorScrapper start");
-
-        String targetDateStr = appConfiguration.getTargetDate();
-        LocalDate targetDate = LocalDate.parse(targetDateStr);
-
-        try {
-            List<DCPostMeta> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
-
-            scrapPosts(targetPostList);
-
-            // TODO rate limiter 적용해서 요청 쓰로틀링 필요
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
-        }
-    }
 
     /**
      * 각 게시글 대상으로 스크래핑
      *
      * @param targetPostList 스크래핑 대상 게시글 정보 리스트
      */
-    private void scrapPosts(List<DCPostMeta> targetPostList) {
+    void scrapPosts(List<DCPostMeta> targetPostList, ESRepository esRepository, WebDriver driver) {
         targetPostList.forEach(post -> {
             String url = DC_DOMAIN + post.getUrl();
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
                 Document doc = Jsoup.connect(url).get();
-                DCContent dcContent = getContent(url, doc);
+                DCContent dcContent = getContent(url, doc, driver);
                 log.info("dcContent : {}", dcContent);
 
                 // ES에 저장
@@ -114,7 +78,7 @@ public class DCMinorScrapper implements Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
-    public DCContent getContent(String url, Document doc) {
+    public DCContent getContent(String url, Document doc, WebDriver driver) {
         String content = removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -149,7 +113,7 @@ public class DCMinorScrapper implements Scrapper {
                 .recommendCount(recommendCount)
                 .commentCount(commentCount)
                 .contentNum(contentNum)
-                .replyList(getReplyList(url))
+                .replyList(getReplyList(url, driver))
                 .build();
 
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -197,7 +161,7 @@ public class DCMinorScrapper implements Scrapper {
      * @param url 파싱할 게시글 url
      * @return 파싱된 댓글 리스트 반환
      */
-    private ArrayList<DCReply> getReplyList(String url) {
+    private ArrayList<DCReply> getReplyList(String url, WebDriver driver) {
         ArrayList<DCReply> result = new ArrayList<>();
 
         driver.get(url);
@@ -276,7 +240,7 @@ public class DCMinorScrapper implements Scrapper {
      * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    private List<DCPostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
+    List<DCPostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
         boolean targetDateFlag = true;
         List<DCPostMeta> result = new ArrayList<>();
