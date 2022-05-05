@@ -37,7 +37,7 @@ class DCScrapperTest {
 
         Document doc = Jsoup.parse(postSampleHtml);
         String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1";
-        DCScrapper dcScrapper = new DCScrapper();
+        DCScrapper dcScrapper = new DCScrapper("https://gall.dcinside.com");
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         Content actual = dcScrapper.getContent(url, doc, driver);

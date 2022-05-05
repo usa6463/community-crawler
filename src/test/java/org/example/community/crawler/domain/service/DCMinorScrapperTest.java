@@ -39,7 +39,7 @@ class DCMinorScrapperTest {
 
         Document doc = Jsoup.parse(boardSampleHtml);
 
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper();
+        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper("https://gall.dcinside.com");
         List<PostMeta> actual = dcMinorScrapper.getDcPosts(doc);
 
         List<PostMeta> expected = new ArrayList<PostMeta>(
@@ -110,7 +110,7 @@ class DCMinorScrapperTest {
         Document doc = Jsoup.parse(boardSampleHtml);
         String url = "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279772&page=2";
 
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper();
+        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper("https://gall.dcinside.com");
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         Content actual = dcMinorScrapper.getContent(url, doc, driver);

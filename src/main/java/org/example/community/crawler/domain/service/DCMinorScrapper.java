@@ -5,7 +5,6 @@ import org.example.community.crawler.domain.entity.Content;
 import org.example.community.crawler.domain.entity.InnerReply;
 import org.example.community.crawler.domain.entity.PostMeta;
 import org.example.community.crawler.domain.entity.Reply;
-import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -37,37 +36,14 @@ public class DCMinorScrapper extends Scrapper {
      * 게시판 번호 붙이는 포맷
      */
     public static final String DC_BOARD_PAGE_URL_FORMAT = "%s&page=%d";
-    /**
-     * DC 도메인 주소
-     */
-    public static final String DOMAIN = "https://gall.dcinside.com";
+
     /**
      * 게시글 url에서 게시글 번호를 추출하기 위한 regex pattern
      */
     public static final String PATTERN_FOR_CONTENT_NUM = "\\S+no=(\\d+).*";
 
-    /**
-     * 각 게시글 대상으로 스크래핑
-     *
-     * @param targetPostList 스크래핑 대상 게시글 정보 리스트
-     */
-    void scrapPosts(List<PostMeta> targetPostList, ESRepository esRepository, WebDriver driver) {
-        targetPostList.forEach(post -> {
-            String url = DOMAIN + post.getUrl();
-            log.debug("target post url: {}", url);
-
-            try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                Document doc = Jsoup.connect(url).get();
-                Content content = getContent(url, doc, driver);
-                log.info("dcContent : {}", content);
-
-                // ES에 저장
-                esRepository.save(content);
-                Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
-            } catch (IOException | InterruptedException e) {
-                log.error("{}", e.getMessage());
-            }
-        });
+    DCMinorScrapper(String domain) {
+        super(domain);
     }
 
     /**
@@ -77,6 +53,7 @@ public class DCMinorScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
+    @Override
     public Content getContent(String url, Document doc, WebDriver driver) {
         String content = removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();

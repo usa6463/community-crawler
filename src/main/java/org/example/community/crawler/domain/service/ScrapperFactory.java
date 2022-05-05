@@ -7,9 +7,9 @@ public class ScrapperFactory {
     public static Scrapper getScrapper(String baseUrl) {
         Scrapper scrapper;
         if (baseUrl.startsWith("https://gall.dcinside.com/mgallery/board/lists?id=")) {
-            scrapper = new DCMinorScrapper();
+            scrapper = new DCMinorScrapper("https://gall.dcinside.com");
         } else if (baseUrl.startsWith("https://gall.dcinside.com/board/lists?id=")) {
-            scrapper = new DCScrapper();
+            scrapper = new DCScrapper("https://gall.dcinside.com");
         } else {
             throw new IllegalArgumentException("Not Supported Board URL");
         }
