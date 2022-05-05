@@ -1,11 +1,10 @@
 package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.community.crawler.config.AppConfiguration;
-import org.example.community.crawler.domain.entity.DCContent;
-import org.example.community.crawler.domain.entity.DCInnerReply;
-import org.example.community.crawler.domain.entity.DCPostMeta;
-import org.example.community.crawler.domain.entity.DCReply;
+import org.example.community.crawler.domain.entity.Content;
+import org.example.community.crawler.domain.entity.InnerReply;
+import org.example.community.crawler.domain.entity.PostMeta;
+import org.example.community.crawler.domain.entity.Reply;
 import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -41,7 +40,7 @@ public class DCMinorScrapper extends Scrapper {
     /**
      * DC 도메인 주소
      */
-    public static final String DC_DOMAIN = "https://gall.dcinside.com";
+    public static final String DOMAIN = "https://gall.dcinside.com";
     /**
      * 게시글 url에서 게시글 번호를 추출하기 위한 regex pattern
      */
@@ -52,18 +51,18 @@ public class DCMinorScrapper extends Scrapper {
      *
      * @param targetPostList 스크래핑 대상 게시글 정보 리스트
      */
-    void scrapPosts(List<DCPostMeta> targetPostList, ESRepository esRepository, WebDriver driver) {
+    void scrapPosts(List<PostMeta> targetPostList, ESRepository esRepository, WebDriver driver) {
         targetPostList.forEach(post -> {
-            String url = DC_DOMAIN + post.getUrl();
+            String url = DOMAIN + post.getUrl();
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
                 Document doc = Jsoup.connect(url).get();
-                DCContent dcContent = getContent(url, doc, driver);
-                log.info("dcContent : {}", dcContent);
+                Content content = getContent(url, doc, driver);
+                log.info("dcContent : {}", content);
 
                 // ES에 저장
-                esRepository.save(dcContent);
+                esRepository.save(content);
                 Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
@@ -78,7 +77,7 @@ public class DCMinorScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
-    public DCContent getContent(String url, Document doc, WebDriver driver) {
+    public Content getContent(String url, Document doc, WebDriver driver) {
         String content = removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -102,7 +101,7 @@ public class DCMinorScrapper extends Scrapper {
                 .html())
                 .replaceAll("댓글 ", "");
 
-        DCContent dcContent = DCContent.builder()
+        Content dcContent = Content.builder()
                 .title(title)
                 .url(url)
                 .content(content)
@@ -118,7 +117,7 @@ public class DCMinorScrapper extends Scrapper {
 
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<DCContent>> violations = validator.validate(dcContent);
+        Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
 
         return dcContent;
@@ -161,8 +160,8 @@ public class DCMinorScrapper extends Scrapper {
      * @param url 파싱할 게시글 url
      * @return 파싱된 댓글 리스트 반환
      */
-    private ArrayList<DCReply> getReplyList(String url, WebDriver driver) {
-        ArrayList<DCReply> result = new ArrayList<>();
+    private ArrayList<Reply> getReplyList(String url, WebDriver driver) {
+        ArrayList<Reply> result = new ArrayList<>();
 
         driver.get(url);
         Document doc = Jsoup.parse(driver.getPageSource());
@@ -179,7 +178,7 @@ public class DCMinorScrapper extends Scrapper {
                 .filter(element -> !element.attr("id").split("_")[2].equals("0")) //댓글돌이 제거
                 .forEach(
                         element -> {
-                            DCReply reply = parseCommentLi(element, commentBox);
+                            Reply reply = parseCommentLi(element, commentBox);
                             result.add(reply);
                         }
                 );
@@ -193,9 +192,9 @@ public class DCMinorScrapper extends Scrapper {
      * @param commentBox comment_box의 elements
      * @return 파싱결과 데이터 객체 반환
      */
-    private DCReply parseCommentLi(Element element, Elements commentBox) {
+    private Reply parseCommentLi(Element element, Elements commentBox) {
         String replyId = element.attr("id").split("_")[2];
-        DCReply result = new DCReply();
+        Reply result = new Reply();
         result.setId(replyId);
 
         result.setNickname(element.select("em").html());
@@ -215,13 +214,13 @@ public class DCMinorScrapper extends Scrapper {
      * @param commentBox comment_box의 elements
      * @return 파싱결과 데이터 객체 반환
      */
-    private ArrayList<DCInnerReply> getInnerReply(String replyId, Elements commentBox) {
-        ArrayList<DCInnerReply> result = new ArrayList<>();
+    private ArrayList<InnerReply> getInnerReply(String replyId, Elements commentBox) {
+        ArrayList<InnerReply> result = new ArrayList<>();
         String cssQuery = String.format("ul[id=reply_list_%s]", replyId);
         Elements innerReplyList = commentBox.select(cssQuery);
         innerReplyList.forEach(
                 element -> {
-                    DCInnerReply innerReply = new DCInnerReply();
+                    InnerReply innerReply = new InnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
                     innerReply.setIp(convertEmptyStringToNull(removeParenthesis(element.select(".ip").html())));
                     innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
@@ -240,15 +239,15 @@ public class DCMinorScrapper extends Scrapper {
      * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    List<DCPostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
+    List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
         boolean targetDateFlag = true;
-        List<DCPostMeta> result = new ArrayList<>();
+        List<PostMeta> result = new ArrayList<>();
         while (targetDateFlag) {
             String boardUrl = String.format(DC_BOARD_PAGE_URL_FORMAT, boardBaseUrl, boardPage);
 
             log.debug("get Post info from {}", boardUrl);
-            List<DCPostMeta> list = getDcPosts(Jsoup.connect(boardUrl).get());
+            List<PostMeta> list = getDcPosts(Jsoup.connect(boardUrl).get());
             targetDateFlag = checkTargetDateBeforePost(targetDate, list);
 
             result.addAll(getTargetDatePost(targetDate, list));
@@ -268,7 +267,7 @@ public class DCMinorScrapper extends Scrapper {
      * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
      * @return target date 게시글만 남은 리스트
      */
-    private List<DCPostMeta> getTargetDatePost(LocalDate targetDate, List<DCPostMeta> postList) {
+    private List<PostMeta> getTargetDatePost(LocalDate targetDate, List<PostMeta> postList) {
         return postList.stream()
                 .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
                         .isEqual(targetDate))
@@ -282,7 +281,7 @@ public class DCMinorScrapper extends Scrapper {
      * @param postList   게시판 페이지에서 수집한 게시글 정보 리스트
      * @return target date 이전 날짜 게시글이 없으면 true, 있으면 false
      */
-    private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<DCPostMeta> postList) {
+    private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<PostMeta> postList) {
         long targetDateBeforePostCount = postList.stream()
                 .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
                         .isBefore(targetDate))
@@ -298,7 +297,7 @@ public class DCMinorScrapper extends Scrapper {
      * @return 게시글 정보 리스트
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
-    public List<DCPostMeta> getDcPosts(Document doc) throws IOException {
+    public List<PostMeta> getDcPosts(Document doc) throws IOException {
 
         Elements gallDateList = doc.select(".gall_date");
         Elements gallNumList = doc.select(".gall_num");
@@ -310,7 +309,7 @@ public class DCMinorScrapper extends Scrapper {
 
         return IntStream
                 .range(0, minListSize)
-                .mapToObj(i -> new DCPostMeta(
+                .mapToObj(i -> new PostMeta(
                         gallDateList.get(i).attr("title"),
                         gallNumList.get(i).ownText(),
                         gallCountList.get(i).ownText(),

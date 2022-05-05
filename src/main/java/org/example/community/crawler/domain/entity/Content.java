@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Data
 @Builder
 @Document(indexName = "#{@appConfiguration.getEsIndexName()}")
-public class DCContent {
+public class Content {
     @Id
     private int contentNum;
     @NotNull
@@ -24,5 +24,5 @@ public class DCContent {
     private String viewCount;
     private String recommendCount;
     private String commentCount;
-    private ArrayList<DCReply> replyList;
+    private ArrayList<Reply> replyList;
 }
