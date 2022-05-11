@@ -100,10 +100,6 @@ public class DCMinorScrapper extends Scrapper {
         return dcContent;
     }
 
-    private String removeParenthesis(String src) {
-        return src.replaceAll("[\\(,\\)]", "");
-    }
-
     private String convertEmptyStringToNull(String input) {
         if (input.equals("")) {
             return null;

@@ -70,6 +70,10 @@ public abstract class Scrapper {
         });
     }
 
+    protected String removeParenthesis(String src) {
+        return src.replaceAll("[\\(,\\)]", "");
+    }
+
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
     abstract public Content getContent(String url, Document doc, WebDriver driver);
