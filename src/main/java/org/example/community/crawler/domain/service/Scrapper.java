@@ -81,6 +81,10 @@ public abstract class Scrapper {
         return input;
     }
 
+    protected String removeTag(String html) {
+        return Jsoup.parse(html).text();
+    }
+
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
     abstract public Content getContent(String url, Document doc, WebDriver driver);
