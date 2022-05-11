@@ -100,13 +100,6 @@ public class DCScrapper extends Scrapper {
         return dcContent;
     }
 
-    private String convertEmptyStringToNull(String input) {
-        if (input.equals("")) {
-            return null;
-        }
-        return input;
-    }
-
     private String removeTag(String html) {
         return Jsoup.parse(html).text();
     }

@@ -74,6 +74,13 @@ public abstract class Scrapper {
         return src.replaceAll("[\\(,\\)]", "");
     }
 
+    protected String convertEmptyStringToNull(String input) {
+        if (input.equals("")) {
+            return null;
+        }
+        return input;
+    }
+
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
     abstract public Content getContent(String url, Document doc, WebDriver driver);
