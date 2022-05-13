@@ -75,14 +75,6 @@ public abstract class Scrapper {
     }
 
 
-
-    protected String convertEmptyStringToNull(String input) {
-        if (input.equals("")) {
-            return null;
-        }
-        return input;
-    }
-
     protected String removeTag(String html) {
         return Jsoup.parse(html).text();
     }

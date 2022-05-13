@@ -25,4 +25,11 @@ public class CommonScrapperFunction {
     static String removeParenthesis(String src) {
         return src.replaceAll("[\\(,\\)]", "");
     }
+
+    static String convertEmptyStringToNull(String input) {
+        if (input.equals("")) {
+            return null;
+        }
+        return input;
+    }
 }

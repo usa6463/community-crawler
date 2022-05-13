@@ -17,9 +17,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -146,7 +143,7 @@ public class DCScrapper extends Scrapper {
 
         result.setNickname(element.select("em").html());
         result.setIp(
-                convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip")
+                CommonScrapperFunction.convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip")
                         .html())));
         result.setContent(removeTag(element.select("p[class^=usertxt]").html()));
         result.setDate(element.select("span[class^=date_time]").html());
@@ -169,7 +166,7 @@ public class DCScrapper extends Scrapper {
                 element -> {
                     InnerReply innerReply = new InnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
-                    innerReply.setIp(convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip").html())));
+                    innerReply.setIp(CommonScrapperFunction.convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip").html())));
                     innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
                     innerReply.setDate(element.select("span[class^=date_time]").html());
                     result.add(innerReply);
