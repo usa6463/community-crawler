@@ -61,7 +61,7 @@ public class DCScrapper extends Scrapper {
 
         Elements fl = doc.select(".fl");
         String nickname = removeTag(fl.select(".nickname").html());
-        String ip = removeParenthesis(fl.select(".ip")
+        String ip = CommonScrapperFunction.removeParenthesis(fl.select(".ip")
                 .html());
         String date = getZonedDatetime(fl.select(".gall_date")
                         .html(),
@@ -146,7 +146,7 @@ public class DCScrapper extends Scrapper {
 
         result.setNickname(element.select("em").html());
         result.setIp(
-                convertEmptyStringToNull(removeParenthesis(element.select(".ip")
+                convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip")
                         .html())));
         result.setContent(removeTag(element.select("p[class^=usertxt]").html()));
         result.setDate(element.select("span[class^=date_time]").html());
@@ -169,7 +169,7 @@ public class DCScrapper extends Scrapper {
                 element -> {
                     InnerReply innerReply = new InnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
-                    innerReply.setIp(convertEmptyStringToNull(removeParenthesis(element.select(".ip").html())));
+                    innerReply.setIp(convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip").html())));
                     innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
                     innerReply.setDate(element.select("span[class^=date_time]").html());
                     result.add(innerReply);

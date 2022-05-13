@@ -74,9 +74,7 @@ public abstract class Scrapper {
         });
     }
 
-    protected String removeParenthesis(String src) {
-        return src.replaceAll("[\\(,\\)]", "");
-    }
+
 
     protected String convertEmptyStringToNull(String input) {
         if (input.equals("")) {

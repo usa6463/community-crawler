@@ -21,4 +21,8 @@ public class CommonScrapperFunction {
         driver = new ChromeDriver(chromeOptions);
         return driver;
     }
+
+    static String removeParenthesis(String src) {
+        return src.replaceAll("[\\(,\\)]", "");
+    }
 }
