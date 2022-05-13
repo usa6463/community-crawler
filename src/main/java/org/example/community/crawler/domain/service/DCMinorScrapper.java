@@ -185,6 +185,7 @@ public class DCMinorScrapper extends Scrapper {
      * @return 게시판 순회하면서 target_date 날짜 게시글 링크를 list에 append 후 반환
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
+    @Override
     List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
         boolean targetDateFlag = true;
