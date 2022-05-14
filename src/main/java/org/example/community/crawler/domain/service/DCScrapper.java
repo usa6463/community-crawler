@@ -60,7 +60,7 @@ public class DCScrapper extends Scrapper {
         String nickname = CommonScrapperFunction.removeTag(fl.select(".nickname").html());
         String ip = CommonScrapperFunction.removeParenthesis(fl.select(".ip")
                 .html());
-        String date = getZonedDatetime(fl.select(".gall_date")
+        String date = CommonScrapperFunction.getZonedDatetime(fl.select(".gall_date")
                         .html(),
                 "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
 
