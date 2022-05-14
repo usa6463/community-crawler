@@ -1,6 +1,7 @@
 package org.example.community.crawler.domain.service;
 
 import org.example.community.crawler.config.AppConfiguration;
+import org.jsoup.Jsoup;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -31,5 +32,9 @@ public class CommonScrapperFunction {
             return null;
         }
         return input;
+    }
+
+    static String removeTag(String html) {
+        return Jsoup.parse(html).text();
     }
 }

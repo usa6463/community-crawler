@@ -52,12 +52,12 @@ public class DCScrapper extends Scrapper {
      */
     @Override
     public Content getContent(String url, Document doc, WebDriver driver) {
-        String content = removeTag(doc.select(".write_div").html());
+        String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
 
         Elements fl = doc.select(".fl");
-        String nickname = removeTag(fl.select(".nickname").html());
+        String nickname = CommonScrapperFunction.removeTag(fl.select(".nickname").html());
         String ip = CommonScrapperFunction.removeParenthesis(fl.select(".ip")
                 .html());
         String date = getZonedDatetime(fl.select(".gall_date")
@@ -71,7 +71,7 @@ public class DCScrapper extends Scrapper {
         String recommendCount = fr.select(".gall_reply_num")
                 .html()
                 .replaceAll("추천 ", "");
-        String commentCount = removeTag(fr.select(".gall_comment")
+        String commentCount = CommonScrapperFunction.removeTag(fr.select(".gall_comment")
                 .html())
                 .replaceAll("댓글 ", "");
 
@@ -145,7 +145,7 @@ public class DCScrapper extends Scrapper {
         result.setIp(
                 CommonScrapperFunction.convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip")
                         .html())));
-        result.setContent(removeTag(element.select("p[class^=usertxt]").html()));
+        result.setContent(CommonScrapperFunction.removeTag(element.select("p[class^=usertxt]").html()));
         result.setDate(element.select("span[class^=date_time]").html());
         result.setInnerReplyList(getInnerReply(replyId, commentBox));
         return result;
@@ -167,7 +167,7 @@ public class DCScrapper extends Scrapper {
                     InnerReply innerReply = new InnerReply();
                     innerReply.setNickname(element.select("em[title]").html());
                     innerReply.setIp(CommonScrapperFunction.convertEmptyStringToNull(CommonScrapperFunction.removeParenthesis(element.select(".ip").html())));
-                    innerReply.setContent(removeTag(element.select("p[class^=usertxt]").html()));
+                    innerReply.setContent(CommonScrapperFunction.removeTag(element.select("p[class^=usertxt]").html()));
                     innerReply.setDate(element.select("span[class^=date_time]").html());
                     result.add(innerReply);
                 }

@@ -75,10 +75,6 @@ public abstract class Scrapper {
     }
 
 
-    protected String removeTag(String html) {
-        return Jsoup.parse(html).text();
-    }
-
     /**
      * dateTime 문자열을 파싱하고 특정 zone의 시간대로 변경한 뒤 다시 문자열로 반환.
      * 예를들어 fromZone이 "Asia/Seoul" 이고 toZone이 "UTC" 라면 9시간을 뺀 datetime 문자열을 반환한다.
