@@ -1,10 +1,7 @@
 package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.community.crawler.domain.entity.Content;
-import org.example.community.crawler.domain.entity.InnerReply;
-import org.example.community.crawler.domain.entity.PostMeta;
-import org.example.community.crawler.domain.entity.Reply;
+import org.example.community.crawler.domain.entity.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -226,6 +223,7 @@ public class DCMinorScrapper extends Scrapper {
      * @return target date 이전 날짜 게시글이 없으면 true, 있으면 false
      */
     private Boolean checkTargetDateBeforePost(LocalDate targetDate, List<PostMeta> postList) {
+        postList.forEach(x-> log.debug("post date : {}", x.getDate()));
         long targetDateBeforePostCount = postList.stream()
                 .filter(post -> LocalDate.parse(post.getDate(), DateTimeFormatter.ofPattern(DC_DATETIME_FORMAT))
                         .isBefore(targetDate))
@@ -247,18 +245,22 @@ public class DCMinorScrapper extends Scrapper {
         Elements gallNumList = doc.select(".gall_num");
         Elements gallCountList = doc.select(".gall_count");
         Elements gallUrlList = doc.select(".gall_tit > a:not(.reply_numbox)");
+        Elements gallSubjectList = doc.select(".gall_subject");
 
         int minListSize = Collections.min(Arrays.asList(gallDateList.size(),
                 gallNumList.size(), gallCountList.size(), gallUrlList.size()));
 
         return IntStream
                 .range(0, minListSize)
-                .mapToObj(i -> new PostMeta(
+                .mapToObj(i -> new DCMinorPostMeta(
                         gallDateList.get(i).attr("title"),
                         gallNumList.get(i).ownText(),
                         gallCountList.get(i).ownText(),
-                        gallUrlList.get(i).attr("href")
+                        gallUrlList.get(i).attr("href"),
+                        CommonScrapperFunction.removeTag(gallSubjectList.get(i).toString())
                 ))
+                .filter(obj -> !obj.getSubject()
+                        .equals("공지")) // 말머리가 "공지" 인 경우 필터링
                 .filter(obj -> obj.getCount()
                         .chars()
                         .allMatch(Character::isDigit)) // 조회수가 "-" 인 경우 필터링
