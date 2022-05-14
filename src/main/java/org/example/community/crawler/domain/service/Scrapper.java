@@ -33,7 +33,7 @@ public abstract class Scrapper {
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         log.info("DOMAIN TEST: {}", domain);
 
-        log.info("DCScrapper start"); // TODO 실제 실행 클래스명이 들어가도록 수정
+        log.info("{} start", this.getClass().getSimpleName());
 
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
