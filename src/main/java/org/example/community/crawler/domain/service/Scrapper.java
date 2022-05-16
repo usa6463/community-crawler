@@ -25,7 +25,7 @@ public abstract class Scrapper {
     /**
      * 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
      */
-    public void scrap(AppConfiguration appConfiguration, ESRepository esRepository) {
+    public void scrap(AppConfiguration appConfiguration, ESRepository esRepository) throws IOException, InterruptedException {
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         log.info("DOMAIN TEST: {}", domain);
 
@@ -34,15 +34,12 @@ public abstract class Scrapper {
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
 
-        try {
-            List<PostMeta> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
 
-            scrapPosts(targetPostList, esRepository, driver);
+        List<PostMeta> targetPostList = traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
 
-            // TODO rate limiter 적용해서 요청 쓰로틀링 필요
-        } catch (Exception e) {
-            log.error("{}", e.getMessage());
-        }
+        scrapPosts(targetPostList, esRepository, driver);
+
+        // TODO rate limiter 적용해서 요청 쓰로틀링 필요
     }
 
 
