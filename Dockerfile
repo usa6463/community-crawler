@@ -22,5 +22,5 @@ ENV BOARD_BASE_URL="https://gall.dcinside.com/board/lists/?id=rlike"
 ENV ES_INDEX_NAME="dc-content-loglike"
 ENV WEB_DRIVER_PATH="/chromedriver"
 
-ENTRYPOINT ["java","-jar","/home/appuser/app.jar", \
- "--spring.profiles.active=dev"]
+ENTRYPOINT ["java","-jar","/home/appuser/app.jar"]
+CMD ["--spring.profiles.active=prod"]
