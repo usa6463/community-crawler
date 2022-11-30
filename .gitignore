@@ -34,3 +34,7 @@ build/
 
 ### chromdriver ###
 deploy/google-chrome-stable/chromedriver_linux64
+
+### spring configuration for local, test
+/src/main/resources/application-local.yml
+/src/main/resources/application-test.yml

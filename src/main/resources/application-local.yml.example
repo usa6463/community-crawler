@@ -5,8 +5,8 @@ spring:
 
 app:
   board_base_url: "https://gall.dcinside.com/board/lists?id=rlike" # https://gall.dcinside.com/board/lists?id=rlike https://gall.dcinside.com/mgallery/board/lists?id=mf
-  target_date: "2022-05-15"
-  web_driver_path: "C:\\Program Files\\chrome_driver_100\\chromedriver.exe"
+  target_date: "2022-11-29"
+  web_driver_path: "/Users/isk/Documents/Projects/community-crawler/community-crawler/chrome_driver/chromedriver_arm64_107"
   es_index_name: "dc-content-loglike"
 
 logging:
