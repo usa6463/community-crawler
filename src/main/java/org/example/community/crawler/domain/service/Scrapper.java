@@ -8,6 +8,7 @@ import org.example.community.crawler.repository.ESRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.WebDriver;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.IOException;
 import java.time.LocalDate;

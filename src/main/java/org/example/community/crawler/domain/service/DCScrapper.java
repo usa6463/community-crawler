@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -50,8 +51,17 @@ public class DCScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
+    @Async
     @Override
     public Content getContent(String url, Document doc, WebDriver driver) {
+        try {
+            long threadId = Thread.currentThread().getId();
+            log.info("Thread # " + threadId + " is doing this task");
+            Thread.sleep(8000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));

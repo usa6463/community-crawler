@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -47,6 +48,7 @@ public class DCMinorScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
+    @Async
     @Override
     public Content getContent(String url, Document doc, WebDriver driver) {
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
