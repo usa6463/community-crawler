@@ -73,8 +73,6 @@ class DCScrapperTest {
                 )
                 .build();
 
-        log.info("here");
-        System.out.println("here");
         assertThat(actual.get()).usingRecursiveComparison()
                 .isEqualTo(expected);
     }

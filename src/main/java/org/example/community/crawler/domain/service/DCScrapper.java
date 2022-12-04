@@ -56,15 +56,15 @@ public class DCScrapper extends Scrapper {
     @Override
     @Async
     public Future<Content> getContent(String url, Document doc, WebDriver driver) {
-//        try {
-//            long threadId = Thread.currentThread().getId();
-//            log.info("Thread # " + threadId + " is doing this task");
-//            Thread.sleep(8000);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        log.info("test complte1");
+        try {
+            long threadId = Thread.currentThread().getId();
+            log.info("Thread # " + threadId + " is doing this task");
+            Thread.sleep(8000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -77,7 +77,6 @@ public class DCScrapper extends Scrapper {
                         .html(),
                 "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
 
-        log.info("test complte2");
         Elements fr = doc.select(".fr");
         String viewCount = fr.select(".gall_count")
                 .html()
@@ -88,7 +87,6 @@ public class DCScrapper extends Scrapper {
         String commentCount = CommonScrapperFunction.removeTag(fr.select(".gall_comment")
                 .html())
                 .replaceAll("댓글 ", "");
-        log.info("test complte2-1");
 
         Content dcContent = Content.builder()
                 .title(title)
@@ -104,13 +102,10 @@ public class DCScrapper extends Scrapper {
                 .replyList(getReplyList(url, driver))
                 .build();
 
-        log.info("test complte3");
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
-
-        log.info("test complte4");
 
         return new AsyncResult<>(dcContent);
     }
