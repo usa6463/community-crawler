@@ -273,14 +273,6 @@ public class DCScrapper implements Scrapper {
 
     @Async
     public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
-        try {
-            long threadId = Thread.currentThread().getId();
-            log.info("Thread # " + threadId + " is doing this task");
-            Thread.sleep(8000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         Document doc = Jsoup.connect(url).get();
         Content content = getContent(url, doc, driver);
         log.info("content : {}", content);

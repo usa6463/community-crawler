@@ -2,6 +2,7 @@ package org.example.community.crawler.runner;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
+import org.example.community.crawler.config.SpringAsyncConfig;
 import org.example.community.crawler.domain.entity.PostMeta;
 import org.example.community.crawler.domain.service.CommonScrapperFunction;
 import org.example.community.crawler.domain.service.Scrapper;
@@ -25,14 +26,16 @@ public class ScrappingRunner implements CommandLineRunner {
     private final AppConfiguration appConfiguration;
     private final ESRepository esRepository;
     private final ScrapperFactory scrapperFactory;
+    private final SpringAsyncConfig springAsyncConfig;
 
     final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
 
     @Autowired
-    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, ScrapperFactory scrapperFactory) {
+    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, ScrapperFactory scrapperFactory, SpringAsyncConfig springAsyncConfig) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
         this.scrapperFactory = scrapperFactory;
+        this.springAsyncConfig = springAsyncConfig;
     }
 
     @Override
