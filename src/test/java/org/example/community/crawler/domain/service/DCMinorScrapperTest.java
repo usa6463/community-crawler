@@ -20,6 +20,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -29,7 +31,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DCMinorScrapperTest {
 
     @Test
-    void getDcPosts(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException {
+    void getDcPosts(@Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:dc-minor-board-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String boardSampleHtml = FileCopyUtils.copyToString(reader);
@@ -97,7 +99,7 @@ class DCMinorScrapperTest {
     }
 
     @Test
-    void getContent(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException {
+    void getContent(@Autowired AppConfiguration appConfiguration, @Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException, ExecutionException, InterruptedException {
         Resource resource = resourceLoader.getResource("classpath:dc-minor-content-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String boardSampleHtml = FileCopyUtils.copyToString(reader);
@@ -107,7 +109,7 @@ class DCMinorScrapperTest {
 
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
-        Content actual = dcMinorScrapper.getContent(url, doc, driver);
+        Future<Content> actual = dcMinorScrapper.getContent(url, doc, driver);
 
         Content expected = Content.builder()
                 .contentNum(279772)
@@ -134,8 +136,7 @@ class DCMinorScrapperTest {
                 )
                 .build();
 
-        assertThat(actual).usingRecursiveComparison()
+        assertThat(actual.get()).usingRecursiveComparison()
                 .isEqualTo(expected);
-
     }
 }

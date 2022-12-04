@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions;
 class ScrapperFactoryTest {
 
     @Test
-    void baseUrlDCMinorTest(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ScrapperFactory scrapperFactory) {
+    void baseUrlDCMinorTest(@Autowired ScrapperFactory scrapperFactory) {
         Scrapper scrapper = scrapperFactory.getScrapperService("https://gall.dcinside.com/mgallery/board/lists?id=mf");
 
         Assertions.assertTrue(scrapper instanceof DCMinorScrapper);

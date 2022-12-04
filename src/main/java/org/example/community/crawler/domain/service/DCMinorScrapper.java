@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -49,7 +51,7 @@ public class DCMinorScrapper extends Scrapper {
      */
     @Async
     @Override
-    public Content getContent(String url, Document doc, WebDriver driver) {
+    public Future<Content> getContent(String url, Document doc, WebDriver driver) {
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -92,7 +94,7 @@ public class DCMinorScrapper extends Scrapper {
         Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
 
-        return dcContent;
+        return new AsyncResult<>(dcContent);
     }
 
     /**

@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -32,7 +34,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DCScrapperTest {
 
     @Test
-    void getContentTest(@Autowired AppConfiguration appConfiguration, @Autowired ResourceLoader resourceLoader, @Autowired DCScrapper dcScrapper) throws IOException {
+    void getContentTest(@Autowired AppConfiguration appConfiguration, @Autowired ResourceLoader resourceLoader, @Autowired DCScrapper dcScrapper) throws IOException, ExecutionException, InterruptedException {
         Resource resource = resourceLoader.getResource("classpath:dc-content-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String postSampleHtml = FileCopyUtils.copyToString(reader);
@@ -42,7 +44,7 @@ class DCScrapperTest {
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
 
-        Content actual = dcScrapper.getContent(url, doc, driver);
+        Future<Content> actual = dcScrapper.getContent(url, doc, driver);
         Content expected = Content.builder()
                 .contentNum(406576)
                 .title("ㄷㅈ) 픽다트 지형 만드는데 아이디어 좀")
@@ -71,7 +73,9 @@ class DCScrapperTest {
                 )
                 .build();
 
-        assertThat(actual).usingRecursiveComparison()
+        log.info("here");
+        System.out.println("here");
+        assertThat(actual.get()).usingRecursiveComparison()
                 .isEqualTo(expected);
     }
 

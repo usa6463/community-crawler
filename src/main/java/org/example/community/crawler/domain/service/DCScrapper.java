@@ -12,6 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,9 +52,10 @@ public class DCScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
-    @Async
+//    @Async
     @Override
-    public Content getContent(String url, Document doc, WebDriver driver) {
+    @Async
+    public Future<Content> getContent(String url, Document doc, WebDriver driver) {
 //        try {
 //            long threadId = Thread.currentThread().getId();
 //            log.info("Thread # " + threadId + " is doing this task");
@@ -109,7 +112,7 @@ public class DCScrapper extends Scrapper {
 
         log.info("test complte4");
 
-        return dcContent;
+        return new AsyncResult<>(dcContent);
     }
 
 

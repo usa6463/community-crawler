@@ -13,6 +13,8 @@ import org.openqa.selenium.WebDriver;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Slf4j
 public abstract class Scrapper {
@@ -51,14 +53,16 @@ public abstract class Scrapper {
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
                 Document doc = Jsoup.connect(url).get();
-                Content content = getContent(url, doc, driver);
+                Future<Content> content = getContent(url, doc, driver);
                 log.info("dcContent : {}", content);
 
                 // ES에 저장
-                esRepository.save(content);
+                esRepository.save(content.get());
                 Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
         });
     }
@@ -66,7 +70,7 @@ public abstract class Scrapper {
 
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
-    abstract public Content getContent(String url, Document doc, WebDriver driver);
+    abstract public Future<Content> getContent(String url, Document doc, WebDriver driver);
 
     abstract public ScrapperType getScrapperType();
     abstract public String getDomain();
