@@ -2,9 +2,11 @@ package org.example.community.crawler.domain.service;
 
 import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.repository.ESRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ScrapperFactory {
-    public static Scrapper getScrapper(String baseUrl) {
+    public Scrapper getScrapper(String baseUrl) {
         Scrapper scrapper;
         if (baseUrl.startsWith("https://gall.dcinside.com/mgallery/board/lists?id=")) {
             scrapper = new DCMinorScrapper("https://gall.dcinside.com");

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.service.Scrapper;
 import org.example.community.crawler.domain.service.ScrapperFactory;
-import org.example.community.crawler.domain.service.TestService;
 import org.example.community.crawler.repository.ESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,25 +17,21 @@ public class ScrappingRunner implements CommandLineRunner {
 
     private final AppConfiguration appConfiguration;
     private final ESRepository esRepository;
-    private final TestService testService;
+    private final ScrapperFactory scrapperFactory;
 
     @Autowired
-    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, TestService testService) {
+    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, ScrapperFactory scrapperFactory) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
-        this.testService = testService;
+        this.scrapperFactory = scrapperFactory;
     }
 
     @Override
     public void run(String... args) throws Exception {
         Scrapper scrapper = null;
         String baseUrl = appConfiguration.getBoardBaseUrl();
-        scrapper = ScrapperFactory.getScrapper(baseUrl);
 
-        for (int i = 0; i < 20; i++) {
-            testService.test();
-        }
-
+        scrapper = scrapperFactory.getScrapper(baseUrl);
         scrapper.scrap(appConfiguration, esRepository);
     }
 }
