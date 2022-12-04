@@ -1,13 +1,13 @@
 package org.example.community.crawler.domain.service;
 
 import org.example.community.crawler.utils.ScrapperType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 public class ScrapperFactory {
 
     private final Map<ScrapperType, Scrapper> ScrapperMap = new HashMap<>();

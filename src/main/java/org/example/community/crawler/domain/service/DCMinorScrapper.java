@@ -2,6 +2,7 @@ package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.domain.entity.*;
+import org.example.community.crawler.repository.ESRepository;
 import org.example.community.crawler.utils.ScrapperType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Service
-public class DCMinorScrapper extends Scrapper {
+public class DCMinorScrapper implements Scrapper {
 
     /**
      * DC 게시판에서 확인할 수 있는 게시글 등록일자 포맷
@@ -182,7 +182,7 @@ public class DCMinorScrapper extends Scrapper {
      * @throws IOException Jsoup으로 get 수행시 발생 가능
      */
     @Override
-    List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
+    public List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException {
         int boardPage = 1;
         boolean targetDateFlag = true;
         List<PostMeta> result = new ArrayList<>();
@@ -270,6 +270,24 @@ public class DCMinorScrapper extends Scrapper {
                         .chars()
                         .allMatch(Character::isDigit)) // 번호가 공지, 뉴스, 설문 인 경우 필터링
                 .collect(Collectors.toList());
+    }
+
+    @Async
+    public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+        try {
+            long threadId = Thread.currentThread().getId();
+            log.info("Thread # " + threadId + " is doing this task");
+            Thread.sleep(8000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Document doc = Jsoup.connect(url).get();
+        Content content = getContent(url, doc, driver);
+        log.info("content : {}", content);
+
+        // ES에 저장
+        esRepository.save(content);
     }
 
     @Override

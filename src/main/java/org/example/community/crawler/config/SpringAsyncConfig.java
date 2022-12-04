@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @Configuration
-@EnableAsync(mode= AdviceMode.ASPECTJ)
+@EnableAsync
 public class SpringAsyncConfig extends AsyncConfigurerSupport {
 
     @Override

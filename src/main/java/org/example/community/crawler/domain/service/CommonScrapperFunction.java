@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 public class CommonScrapperFunction {
 
-    static WebDriver getWebDriver(AppConfiguration appConfiguration, String webDriverId) {
+    public static WebDriver getWebDriver(AppConfiguration appConfiguration, String webDriverId) {
         final WebDriver driver;
         System.setProperty(webDriverId, appConfiguration.getWebDriverPath());
         System.setProperty("webdriver.chrome.whitelistedIps", "");
