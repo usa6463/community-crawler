@@ -49,9 +49,8 @@ public class DCMinorScrapper extends Scrapper {
      * @param doc 파싱할 게시글 Document 객체
      * @return DCContent 데이터 객체 반환
      */
-    @Async
     @Override
-    public Future<Content> getContent(String url, Document doc, WebDriver driver) {
+    public Content getContent(String url, Document doc, WebDriver driver) {
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -94,7 +93,7 @@ public class DCMinorScrapper extends Scrapper {
         Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
 
-        return new AsyncResult<>(dcContent);
+        return dcContent;
     }
 
     /**

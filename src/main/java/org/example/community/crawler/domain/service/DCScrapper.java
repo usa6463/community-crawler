@@ -54,17 +54,7 @@ public class DCScrapper extends Scrapper {
      */
 //    @Async
     @Override
-    @Async
-    public Future<Content> getContent(String url, Document doc, WebDriver driver) {
-        try {
-            long threadId = Thread.currentThread().getId();
-            log.info("Thread # " + threadId + " is doing this task");
-            Thread.sleep(8000);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public Content getContent(String url, Document doc, WebDriver driver) {
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -107,7 +97,7 @@ public class DCScrapper extends Scrapper {
         Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
 
-        return new AsyncResult<>(dcContent);
+        return dcContent;
     }
 
 

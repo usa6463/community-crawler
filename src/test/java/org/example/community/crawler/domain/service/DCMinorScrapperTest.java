@@ -109,7 +109,7 @@ class DCMinorScrapperTest {
 
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
-        Future<Content> actual = dcMinorScrapper.getContent(url, doc, driver);
+        Content actual = dcMinorScrapper.getContent(url, doc, driver);
 
         Content expected = Content.builder()
                 .contentNum(279772)
@@ -136,7 +136,7 @@ class DCMinorScrapperTest {
                 )
                 .build();
 
-        assertThat(actual.get()).usingRecursiveComparison()
+        assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
     }
 }

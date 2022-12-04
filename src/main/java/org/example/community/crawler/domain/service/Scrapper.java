@@ -9,6 +9,8 @@ import org.example.community.crawler.utils.ScrapperType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.WebDriver;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 @Slf4j
+@Service
 public abstract class Scrapper {
     final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
 
@@ -52,25 +55,36 @@ public abstract class Scrapper {
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                Document doc = Jsoup.connect(url).get();
-                Future<Content> content = getContent(url, doc, driver);
-                log.info("dcContent : {}", content);
-
-                // ES에 저장
-                esRepository.save(content.get());
+                getCotentAndSave(esRepository, driver, url);
                 Thread.sleep(1000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
             }
         });
+    }
+
+    @Async
+    public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+        try {
+            long threadId = Thread.currentThread().getId();
+            log.info("Thread # " + threadId + " is doing this task");
+            Thread.sleep(8000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Document doc = Jsoup.connect(url).get();
+        Content content = getContent(url, doc, driver);
+        log.info("content : {}", content);
+
+        // ES에 저장
+        esRepository.save(content);
     }
 
 
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
-    abstract public Future<Content> getContent(String url, Document doc, WebDriver driver);
+    abstract public Content getContent(String url, Document doc, WebDriver driver);
 
     abstract public ScrapperType getScrapperType();
     abstract public String getDomain();

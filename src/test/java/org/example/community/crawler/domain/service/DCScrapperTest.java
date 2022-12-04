@@ -44,7 +44,7 @@ class DCScrapperTest {
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
 
-        Future<Content> actual = dcScrapper.getContent(url, doc, driver);
+        Content actual = dcScrapper.getContent(url, doc, driver);
         Content expected = Content.builder()
                 .contentNum(406576)
                 .title("ㄷㅈ) 픽다트 지형 만드는데 아이디어 좀")
@@ -73,7 +73,7 @@ class DCScrapperTest {
                 )
                 .build();
 
-        assertThat(actual.get()).usingRecursiveComparison()
+        assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
     }
 
