@@ -1,5 +1,6 @@
 package org.example.community.crawler.domain.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.Content;
 import org.example.community.crawler.domain.entity.InnerReply;
@@ -27,21 +28,21 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = "command.line.runner.enabled=false")
 @ActiveProfiles("test")
+@Slf4j
 class DCScrapperTest {
 
     @Test
-    void getContentTest(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
+    void getContentTest(@Autowired AppConfiguration appConfiguration, @Autowired ResourceLoader resourceLoader, @Autowired DCScrapper dcScrapper) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:dc-content-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String postSampleHtml = FileCopyUtils.copyToString(reader);
 
         Document doc = Jsoup.parse(postSampleHtml);
         String url = "https://gall.dcinside.com/board/view/?id=rlike&no=406576&page=1";
-        DCScrapper dcScrapper = new DCScrapper("https://gall.dcinside.com");
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
-        Content actual = dcScrapper.getContent(url, doc, driver);
 
+        Content actual = dcScrapper.getContent(url, doc, driver);
         Content expected = Content.builder()
                 .contentNum(406576)
                 .title("ㄷㅈ) 픽다트 지형 만드는데 아이디어 좀")

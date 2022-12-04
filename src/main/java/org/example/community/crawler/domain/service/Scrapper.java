@@ -5,10 +5,10 @@ import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.Content;
 import org.example.community.crawler.domain.entity.PostMeta;
 import org.example.community.crawler.repository.ESRepository;
+import org.example.community.crawler.utils.ScrapperType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.WebDriver;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,18 +17,13 @@ import java.util.List;
 @Slf4j
 public abstract class Scrapper {
     final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
-    String domain;
-
-    Scrapper(String domain) {
-        this.domain = domain;
-    }
 
     /**
      * 커뮤니티 사이트의 특정날짜 게시글을 스크래핑 하여 스토리지에 저장
      */
     public void scrap(AppConfiguration appConfiguration, ESRepository esRepository) throws IOException, InterruptedException {
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
-        log.info("DOMAIN TEST: {}", domain);
+        log.info("DOMAIN TEST: {}", getDomain());
 
         log.info("{} start", this.getClass().getSimpleName());
 
@@ -51,7 +46,7 @@ public abstract class Scrapper {
      */
     void scrapPosts(List<PostMeta> targetPostList, ESRepository esRepository, WebDriver driver) {
         targetPostList.forEach(post -> {
-            String url = domain + post.getUrl();
+            String url = getDomain() + post.getUrl();
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
@@ -72,5 +67,8 @@ public abstract class Scrapper {
     abstract List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
     abstract public Content getContent(String url, Document doc, WebDriver driver);
+
+    abstract public ScrapperType getScrapperType();
+    abstract public String getDomain();
 
 }

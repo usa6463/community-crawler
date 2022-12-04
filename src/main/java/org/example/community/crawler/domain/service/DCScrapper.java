@@ -5,12 +5,14 @@ import org.example.community.crawler.domain.entity.Content;
 import org.example.community.crawler.domain.entity.InnerReply;
 import org.example.community.crawler.domain.entity.PostMeta;
 import org.example.community.crawler.domain.entity.Reply;
+import org.example.community.crawler.utils.ScrapperType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
+@Service
 public class DCScrapper extends Scrapper {
 
     /**
@@ -39,10 +42,6 @@ public class DCScrapper extends Scrapper {
      */
     public static final String PATTERN_FOR_CONTENT_NUM = "\\S+no=(\\d+).*";
 
-    DCScrapper(String domain) {
-        super(domain);
-    }
-
 
     /**
      * 게시글 내용 파싱하여 반환
@@ -54,14 +53,15 @@ public class DCScrapper extends Scrapper {
     @Async
     @Override
     public Content getContent(String url, Document doc, WebDriver driver) {
-        try {
-            long threadId = Thread.currentThread().getId();
-            log.info("Thread # " + threadId + " is doing this task");
-            Thread.sleep(8000);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            long threadId = Thread.currentThread().getId();
+//            log.info("Thread # " + threadId + " is doing this task");
+//            Thread.sleep(8000);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        log.info("test complte1");
         String content = CommonScrapperFunction.removeTag(doc.select(".write_div").html());
         String title = doc.select(".title_subject").html();
         int contentNum = Integer.parseInt(url.replaceAll(PATTERN_FOR_CONTENT_NUM, "$1"));
@@ -74,6 +74,7 @@ public class DCScrapper extends Scrapper {
                         .html(),
                 "Asia/Seoul", "Asia/Seoul", "yyyy.MM.dd HH:mm:ss");
 
+        log.info("test complte2");
         Elements fr = doc.select(".fr");
         String viewCount = fr.select(".gall_count")
                 .html()
@@ -84,6 +85,7 @@ public class DCScrapper extends Scrapper {
         String commentCount = CommonScrapperFunction.removeTag(fr.select(".gall_comment")
                 .html())
                 .replaceAll("댓글 ", "");
+        log.info("test complte2-1");
 
         Content dcContent = Content.builder()
                 .title(title)
@@ -99,10 +101,13 @@ public class DCScrapper extends Scrapper {
                 .replyList(getReplyList(url, driver))
                 .build();
 
+        log.info("test complte3");
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<Content>> violations = validator.validate(dcContent);
         violations.forEach(x -> log.error(x.getMessage()));
+
+        log.info("test complte4");
 
         return dcContent;
     }
@@ -277,5 +282,15 @@ public class DCScrapper extends Scrapper {
                         .chars()
                         .allMatch(Character::isDigit)) // 번호가 공지, 뉴스, 설문 인 경우 필터링
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ScrapperType getScrapperType() {
+        return ScrapperType.DC;
+    }
+
+    @Override
+    public String getDomain() {
+        return "https://gall.dcinside.com";
     }
 }

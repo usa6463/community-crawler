@@ -29,14 +29,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DCMinorScrapperTest {
 
     @Test
-    void getDcPosts(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
+    void getDcPosts(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:dc-minor-board-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String boardSampleHtml = FileCopyUtils.copyToString(reader);
 
         Document doc = Jsoup.parse(boardSampleHtml);
-
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper("https://gall.dcinside.com");
         List<PostMeta> actual = dcMinorScrapper.getDcPosts(doc);
 
         List<DCMinorPostMeta> expected = new ArrayList<DCMinorPostMeta>(
@@ -99,7 +97,7 @@ class DCMinorScrapperTest {
     }
 
     @Test
-    void getContent(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader) throws IOException {
+    void getContent(@Autowired AppConfiguration appConfiguration, @Autowired ESRepository esRepository, @Autowired ResourceLoader resourceLoader, @Autowired DCMinorScrapper dcMinorScrapper) throws IOException {
         Resource resource = resourceLoader.getResource("classpath:dc-minor-content-sample.html");
         Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
         String boardSampleHtml = FileCopyUtils.copyToString(reader);
@@ -107,7 +105,6 @@ class DCMinorScrapperTest {
         Document doc = Jsoup.parse(boardSampleHtml);
         String url = "https://gall.dcinside.com/mgallery/board/view/?id=mf&no=279772&page=2";
 
-        DCMinorScrapper dcMinorScrapper = new DCMinorScrapper("https://gall.dcinside.com");
         final String WEB_DRIVER_ID = "webdriver.chrome.driver";
         WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         Content actual = dcMinorScrapper.getContent(url, doc, driver);

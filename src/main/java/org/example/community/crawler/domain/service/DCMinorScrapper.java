@@ -2,12 +2,14 @@ package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.domain.entity.*;
+import org.example.community.crawler.utils.ScrapperType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
+@Service
 public class DCMinorScrapper extends Scrapper {
 
     /**
@@ -36,10 +39,6 @@ public class DCMinorScrapper extends Scrapper {
      * 게시글 url에서 게시글 번호를 추출하기 위한 regex pattern
      */
     public static final String PATTERN_FOR_CONTENT_NUM = "\\S+no=(\\d+).*";
-
-    DCMinorScrapper(String domain) {
-        super(domain);
-    }
 
     /**
      * 게시글 내용 파싱하여 반환
@@ -270,5 +269,15 @@ public class DCMinorScrapper extends Scrapper {
                         .chars()
                         .allMatch(Character::isDigit)) // 번호가 공지, 뉴스, 설문 인 경우 필터링
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ScrapperType getScrapperType() {
+        return ScrapperType.DC_MINOR;
+    }
+
+    @Override
+    public String getDomain() {
+        return "https://gall.dcinside.com";
     }
 }

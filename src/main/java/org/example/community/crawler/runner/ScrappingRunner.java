@@ -31,7 +31,7 @@ public class ScrappingRunner implements CommandLineRunner {
         Scrapper scrapper = null;
         String baseUrl = appConfiguration.getBoardBaseUrl();
 
-        scrapper = scrapperFactory.getScrapper(baseUrl);
+        scrapper = scrapperFactory.getScrapperService(baseUrl);
         scrapper.scrap(appConfiguration, esRepository);
     }
 }
