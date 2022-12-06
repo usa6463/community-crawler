@@ -5,7 +5,7 @@ COPY pom.xml ./
 COPY src ./src
 RUN rm -rf /app/target
 
-RUN --mount=type=cache,target=/root/.m2 mvn -Dmaven.test.skip=true -Djava.version=11 package
+RUN mvn -Dmaven.test.skip=true -Djava.version=11 package
 
 FROM usa6463/google-chrome-stable:100.0.4896.127-1
 
