@@ -23,4 +23,4 @@ ENV ES_INDEX_NAME="dc-content-loglike"
 ENV WEB_DRIVER_PATH="/chromedriver"
 
 ENTRYPOINT ["java","-jar","/home/appuser/app.jar"]
-CMD ["--spring.profiles.active=prod"]
+CMD ["--spring.profiles.active=prod", "-Ddebug"]
