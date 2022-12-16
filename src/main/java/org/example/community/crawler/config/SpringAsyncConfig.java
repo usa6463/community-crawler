@@ -1,7 +1,7 @@
 package org.example.community.crawler.config;
 
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.Bean;
+import org.example.community.crawler.utils.CustomAsyncExceptionHandler;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,5 +24,10 @@ public class SpringAsyncConfig extends AsyncConfigurerSupport {
         taskExecutor.setAwaitTerminationSeconds(60);
         taskExecutor.initialize();
         return taskExecutor;
+    }
+
+    @Override
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+        return new CustomAsyncExceptionHandler();
     }
 }
