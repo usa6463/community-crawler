@@ -16,12 +16,12 @@ public class SpringAsyncConfig extends AsyncConfigurerSupport {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(15);
-        taskExecutor.setMaxPoolSize(30);
-        taskExecutor.setQueueCapacity(10);
+        taskExecutor.setCorePoolSize(50);
+        taskExecutor.setMaxPoolSize(100);
+        taskExecutor.setQueueCapacity(100);
         taskExecutor.setThreadNamePrefix("Executor-");
         taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-        taskExecutor.setAwaitTerminationSeconds(60);
+        taskExecutor.setAwaitTerminationSeconds(180);
         taskExecutor.initialize();
         return taskExecutor;
     }
