@@ -21,7 +21,7 @@ public class SpringAsyncConfig extends AsyncConfigurerSupport {
         taskExecutor.setQueueCapacity(500);
         taskExecutor.setThreadNamePrefix("Executor-");
         taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-        taskExecutor.setAwaitTerminationSeconds(60*5);
+        taskExecutor.setAwaitTerminationSeconds(60*120);
         taskExecutor.initialize();
         return taskExecutor;
     }

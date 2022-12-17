@@ -275,13 +275,14 @@ public class DCMinorScrapper implements Scrapper {
 
     @Async
     public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+        log.info("getCotentAndSave start : {}", url);
         Document doc = Jsoup.connect(url).get();
         Content content = getContent(url, doc, driver);
-        log.info("content : {}", content);
+        log.info("url: {} ,content : {}", url, content);
 
         // ES에 저장
         esRepository.save(content);
-        log.info("save complete : {}", content);
+        log.info("url: {} ,save complete : {}", url, content);
     }
 
     @Override
