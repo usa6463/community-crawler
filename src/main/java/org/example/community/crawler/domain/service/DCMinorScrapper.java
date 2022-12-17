@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -280,6 +281,7 @@ public class DCMinorScrapper implements Scrapper {
 
         // ES에 저장
         esRepository.save(content);
+        log.info("save complete : {}", content);
     }
 
     @Override
