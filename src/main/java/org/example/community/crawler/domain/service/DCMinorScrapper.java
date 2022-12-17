@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -274,7 +275,7 @@ public class DCMinorScrapper implements Scrapper {
     }
 
     @Async
-    public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+    public Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
         log.info("getCotentAndSave start : {}", url);
         Document doc = Jsoup.connect(url).get();
         Content content = getContent(url, doc, driver);
@@ -283,6 +284,7 @@ public class DCMinorScrapper implements Scrapper {
         // ES에 저장
         esRepository.save(content);
         log.info("url: {} ,save complete : {}", url, content);
+        return new AsyncResult<String>("return value");
     }
 
     @Override

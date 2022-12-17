@@ -15,11 +15,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.Future;
 
 public interface Scrapper {
 
     @Async
-    void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException;
+    Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException;
 
     List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 

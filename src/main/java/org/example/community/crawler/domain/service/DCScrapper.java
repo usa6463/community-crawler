@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -272,13 +274,14 @@ public class DCScrapper implements Scrapper {
     }
 
     @Async
-    public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+    public Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
         Content content = getContent(url, doc, driver);
         log.info("content : {}", content);
 
         // ES에 저장
         esRepository.save(content);
+        return new AsyncResult<String>("return value");
     }
 
     @Override

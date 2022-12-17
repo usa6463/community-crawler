@@ -16,7 +16,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Component
 @Slf4j
@@ -51,15 +54,24 @@ public class ScrappingRunner implements CommandLineRunner {
         List<PostMeta> targetPostList = scrapper.traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
 
         Scrapper finalScrapper = scrapper;
+        List<Future<String>> futureList = new ArrayList<>();
         targetPostList.forEach(post -> {
             String url = finalScrapper.getDomain() + post.getUrl();
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                finalScrapper.getCotentAndSave(esRepository, driver, url);
+                futureList.add(finalScrapper.getCotentAndSave(esRepository, driver, url));
                 Thread.sleep(2000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
+            }
+        });
+
+        futureList.forEach(result -> {
+            try {
+                result.get();
+            } catch (InterruptedException | ExecutionException e) {
+                //handle thread error
             }
         });
     }
