@@ -72,7 +72,9 @@ public class ScrappingRunner implements CommandLineRunner {
                 result.get();
             } catch (InterruptedException | ExecutionException e) {
                 //handle thread error
+                e.printStackTrace();
             }
         });
+        System.exit(0);
     }
 }
