@@ -48,7 +48,7 @@ public class ScrappingRunner implements CommandLineRunner {
 
         scrapper = scrapperFactory.getScrapperService(baseUrl);
 
-        WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
+//        WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, WEB_DRIVER_ID);
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
         List<PostMeta> targetPostList = scrapper.traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
@@ -60,7 +60,7 @@ public class ScrappingRunner implements CommandLineRunner {
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                futureList.add(finalScrapper.getCotentAndSave(esRepository, driver, url));
+                futureList.add(finalScrapper.getCotentAndSave(esRepository, appConfiguration, WEB_DRIVER_ID, url));
                 Thread.sleep(2000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());

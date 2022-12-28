@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 public interface Scrapper {
 
     @Async
-    Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException;
+    Future<String> getCotentAndSave(ESRepository esRepository, AppConfiguration appConfiguration, String driverId, String url) throws IOException;
 
     List<PostMeta> traverseBoard(LocalDate targetDate, String boardBaseUrl) throws IOException, InterruptedException;
 
