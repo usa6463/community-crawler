@@ -48,7 +48,6 @@ public class ScrappingRunner implements CommandLineRunner {
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
         List<PostMeta> targetPostList = scrapper.traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
-        targetPostList = targetPostList.subList(0, 3);
 
         Scrapper finalScrapper = scrapper;
         targetPostList.forEach(post -> {
