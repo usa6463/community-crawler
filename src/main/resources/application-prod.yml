@@ -8,6 +8,7 @@ app:
   target_date: ${TARGET_DATE}
   web_driver_path: ${WEB_DRIVER_PATH}
   es_index_name: ${ES_INDEX_NAME}
+  politeness: ${POLITENESS}
 
 logging:
   level:

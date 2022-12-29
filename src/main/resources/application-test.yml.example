@@ -8,6 +8,7 @@ app:
   target_date: "2022-03-27"
   web_driver_path: "C:\\Program Files\\chrome_driver_100\\chromedriver.exe"
   es_index_name: "dc-content-loglike"
+  politeness: 1500
 
 logging:
   level:

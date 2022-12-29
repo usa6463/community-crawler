@@ -8,6 +8,7 @@ app:
   target_date: "2022-11-29"
   web_driver_path: "/Users/isk/Documents/Projects/community-crawler/community-crawler/chrome_driver/chromedriver_arm64_107"
   es_index_name: "dc-content-loglike"
+  politeness: 1500
 
 logging:
   level:

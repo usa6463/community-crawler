@@ -19,4 +19,7 @@ public class AppConfiguration {
 
     @Value("${app.es_index_name}")
     String esIndexName;
+
+    @Value("${app.politeness}")
+    long politeness;
 }

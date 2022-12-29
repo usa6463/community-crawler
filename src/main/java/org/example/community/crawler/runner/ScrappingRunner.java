@@ -39,6 +39,7 @@ public class ScrappingRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.info("politeness: {}", appConfiguration.getPoliteness());
         Scrapper scrapper = null;
         String baseUrl = appConfiguration.getBoardBaseUrl();
 
@@ -56,7 +57,7 @@ public class ScrappingRunner implements CommandLineRunner {
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
                 finalScrapper.getCotentAndSave(esRepository, driver, url);
-                Thread.sleep(2000); // TODO rate limiter로 변경하고 InterruptedException 제거
+                Thread.sleep(appConfiguration.getPoliteness()); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
             }
