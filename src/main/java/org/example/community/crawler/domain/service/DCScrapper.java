@@ -1,7 +1,6 @@
 package org.example.community.crawler.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.community.crawler.config.AppConfiguration;
 import org.example.community.crawler.domain.entity.Content;
 import org.example.community.crawler.domain.entity.InnerReply;
 import org.example.community.crawler.domain.entity.PostMeta;
@@ -275,11 +274,9 @@ public class DCScrapper implements Scrapper {
     }
 
     @Async
-    public Future<String> getCotentAndSave(ESRepository esRepository, AppConfiguration appConfiguration, String driverId, String url) throws IOException {
+    public Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
-        WebDriver driver = CommonScrapperFunction.getWebDriver(appConfiguration, driverId);
         Content content = getContent(url, doc, driver);
-        driver.close();
         log.info("content : {}", content);
 
         // ES에 저장
