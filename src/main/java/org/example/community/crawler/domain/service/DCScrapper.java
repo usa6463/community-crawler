@@ -274,14 +274,13 @@ public class DCScrapper implements Scrapper {
     }
 
     @Async
-    public Future<String> getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
+    public void getCotentAndSave(ESRepository esRepository, WebDriver driver, String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
         Content content = getContent(url, doc, driver);
         log.info("content : {}", content);
 
         // ES에 저장
         esRepository.save(content);
-        return new AsyncResult<String>("return value");
     }
 
     @Override

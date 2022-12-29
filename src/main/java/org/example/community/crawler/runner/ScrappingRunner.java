@@ -2,7 +2,6 @@ package org.example.community.crawler.runner;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
-import org.example.community.crawler.config.SpringAsyncConfig;
 import org.example.community.crawler.domain.entity.PostMeta;
 import org.example.community.crawler.domain.service.CommonScrapperFunction;
 import org.example.community.crawler.domain.service.Scrapper;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 @Component
@@ -29,16 +27,14 @@ public class ScrappingRunner implements CommandLineRunner {
     private final AppConfiguration appConfiguration;
     private final ESRepository esRepository;
     private final ScrapperFactory scrapperFactory;
-    private final SpringAsyncConfig springAsyncConfig;
 
     final static String WEB_DRIVER_ID = "webdriver.chrome.driver";
 
     @Autowired
-    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, ScrapperFactory scrapperFactory, SpringAsyncConfig springAsyncConfig) {
+    public ScrappingRunner(AppConfiguration appConfiguration, ESRepository esRepository, ScrapperFactory scrapperFactory) {
         this.appConfiguration = appConfiguration;
         this.esRepository = esRepository;
         this.scrapperFactory = scrapperFactory;
-        this.springAsyncConfig = springAsyncConfig;
     }
 
     @Override
@@ -52,29 +48,19 @@ public class ScrappingRunner implements CommandLineRunner {
         String targetDateStr = appConfiguration.getTargetDate();
         LocalDate targetDate = LocalDate.parse(targetDateStr);
         List<PostMeta> targetPostList = scrapper.traverseBoard(targetDate, appConfiguration.getBoardBaseUrl());
+        targetPostList = targetPostList.subList(0, 3);
 
         Scrapper finalScrapper = scrapper;
-        List<Future<String>> futureList = new ArrayList<>();
         targetPostList.forEach(post -> {
             String url = finalScrapper.getDomain() + post.getUrl();
             log.debug("target post url: {}", url);
 
             try { //TODO try catch 대신 throw 하는걸로 통일할 필요 있을듯
-                futureList.add(finalScrapper.getCotentAndSave(esRepository, driver, url));
+                finalScrapper.getCotentAndSave(esRepository, driver, url);
                 Thread.sleep(2000); // TODO rate limiter로 변경하고 InterruptedException 제거
             } catch (IOException | InterruptedException e) {
                 log.error("{}", e.getMessage());
             }
         });
-
-        futureList.forEach(result -> {
-            try {
-                result.get();
-            } catch (InterruptedException | ExecutionException e) {
-                //handle thread error
-                e.printStackTrace();
-            }
-        });
-        System.exit(0);
     }
 }
