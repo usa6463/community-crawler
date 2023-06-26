@@ -292,6 +292,6 @@ public class DCMinorScrapper implements Scrapper {
 
     @Override
     public String getDomain() {
-        return "https://gall.dcinside.com";
+        return "http://gall.dcinside.com";
     }
 }
