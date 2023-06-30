@@ -1,5 +1,6 @@
 package org.example.community.crawler.domain.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.WebDriver;
@@ -11,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 public class CommonScrapperFunction {
 
     public static WebDriver getWebDriver(AppConfiguration appConfiguration, String webDriverId) {
@@ -23,6 +25,7 @@ public class CommonScrapperFunction {
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--single-process");
         chromeOptions.addArguments("--disable-dev-shm-usage");
+        log.debug("chromedriver option setting complete");
 
         driver = new ChromeDriver(chromeOptions);
         return driver;
