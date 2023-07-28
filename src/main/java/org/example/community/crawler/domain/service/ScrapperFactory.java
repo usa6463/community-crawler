@@ -18,9 +18,9 @@ public class ScrapperFactory {
 
     public Scrapper getScrapperService(String baseUrl) {
         ScrapperType scrapperType;
-        if (baseUrl.startsWith("https://gall.dcinside.com/mgallery/board/lists?id=")) {
+        if (baseUrl.startsWith("http://gall.dcinside.com/mgallery/board/lists?id=")) {
             scrapperType = ScrapperType.DC_MINOR;
-        } else if (baseUrl.startsWith("https://gall.dcinside.com/board/lists?id=")) {
+        } else if (baseUrl.startsWith("http://gall.dcinside.com/board/lists?id=")) {
             scrapperType = ScrapperType.DC;
         } else {
             throw new IllegalArgumentException("Not Supported Board URL");
