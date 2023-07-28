@@ -18,7 +18,6 @@ public class CommonScrapperFunction {
     public static WebDriver getWebDriver(AppConfiguration appConfiguration, String webDriverId) {
         final WebDriver driver;
         System.setProperty(webDriverId, appConfiguration.getWebDriverPath());
-        log.debug("web driver path: {}", appConfiguration.getWebDriverPath());
         System.setProperty("webdriver.chrome.whitelistedIps", "");
 
         ChromeOptions chromeOptions = new ChromeOptions();
