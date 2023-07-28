@@ -25,7 +25,6 @@ public class CommonScrapperFunction {
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--single-process");
         chromeOptions.addArguments("--disable-dev-shm-usage");
-        chromeOptions.addArguments("--remote-debugging-port=9222");
         log.debug("chromedriver option setting complete");
 
         driver = new ChromeDriver(chromeOptions);
