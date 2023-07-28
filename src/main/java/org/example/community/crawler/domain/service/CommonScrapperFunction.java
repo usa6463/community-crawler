@@ -1,6 +1,5 @@
 package org.example.community.crawler.domain.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.example.community.crawler.config.AppConfiguration;
 import org.jsoup.Jsoup;
 import org.openqa.selenium.WebDriver;
@@ -12,13 +11,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Slf4j
 public class CommonScrapperFunction {
 
     public static WebDriver getWebDriver(AppConfiguration appConfiguration, String webDriverId) {
         final WebDriver driver;
         System.setProperty(webDriverId, appConfiguration.getWebDriverPath());
-        log.debug("web driver path: {}", appConfiguration.getWebDriverPath());
         System.setProperty("webdriver.chrome.whitelistedIps", "");
 
         ChromeOptions chromeOptions = new ChromeOptions();
@@ -26,8 +23,6 @@ public class CommonScrapperFunction {
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--single-process");
         chromeOptions.addArguments("--disable-dev-shm-usage");
-        chromeOptions.addArguments("--remote-debugging-port=9222");
-        log.debug("chromedriver option setting complete");
 
         driver = new ChromeDriver(chromeOptions);
         return driver;
