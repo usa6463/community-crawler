@@ -290,6 +290,6 @@ public class DCScrapper implements Scrapper {
 
     @Override
     public String getDomain() {
-        return "http://gall.dcinside.com";
+        return "https://gall.dcinside.com";
     }
 }
